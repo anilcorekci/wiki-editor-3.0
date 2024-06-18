@@ -1,0 +1,36 @@
+#!/bin/bash
+#Hitokiri
+#Since 2010
+# ------------------------------------------------------------------------------
+#   Copyright (c) @hitokiri. All rights reserved. :P
+#   Licensed under the GPL 3 License.
+# ------------------------------------------------------------------------------
+
+cd '/home/hitokiri/Documents/wiki-editor 3.0 GTK4'
+
+dizin='./pyler'
+
+
+while test $# -gt 0 ; do
+  case $1 in
+    -v |--version)
+      echo "Wiki Editor 3.0"
+      exit $?
+      ;;
+    -d |--debug)
+      date|tee -a /tmp/wiki-editor.log
+      cd "$dizin" ; python3.12 ./Wiki\ Editor  2>&1 |tee -a /tmp/wiki-editor.log
+      exit $?
+      ;;
+    /*)
+      cd "$dizin" ; python3.12 "$PWD/Wiki Editor" "$@"
+      exit 1
+      ;;
+    *)
+      cd "$dizin" ; python3.12 "$PWD/Wiki Editor"  "$@"
+      exit 1
+      ;;
+  esac
+done
+
+cd "$dizin" ; python3.12 "$PWD/Wiki Editor" $*
