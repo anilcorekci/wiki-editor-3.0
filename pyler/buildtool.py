@@ -158,7 +158,7 @@ class ToolItem():
                 f"{islem[1]}" ] 
             )
         else:
-            self.ileti.set_text("Seçili hiç bir metin yok !")
+            self.ileti.set_text("No selected text found!")
 
     def sablon(self, _, format_):
         """
