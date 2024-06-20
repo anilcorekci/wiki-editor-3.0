@@ -92,7 +92,11 @@ class ToolBar(gtk.Box):
         self.sw.set_propagate_natural_width(True) ##!
         self.sw.set_propagate_natural_height(True) ##!
       #  self.sw.get_hscrollbar().set_visible(False)
-        self.sw.set_policy( gtk.PolicyType.EXTERNAL, True )
+        self.sw.set_policy( gtk.PolicyType.EXTERNAL, gtk.PolicyType.NEVER )
+
+        adj = self.sw.get_hscrollbar().get_adjustment()
+        adj.connect("changed", self.make_popover)
+        adj.connect("value-changed", lambda *_: adj.set_value(0))
 
         self.set_margin_start(12)
         self.set_margin_end(12)
@@ -101,12 +105,60 @@ class ToolBar(gtk.Box):
 
         self.sw.add_css_class( "wiki-scroll" )
 
+
     @property
     def scroll(self):
         """
         return parent widget
         """
         return self.sw
+
+    def make_popover(self, adj):
+        """
+        # print(adj.get_page_size()) # the size of  visible hscroll
+        #print(adj.get_upper() ) # the max value
+        """
+        visible = adj.get_page_size()
+        max = adj.get_upper()
+        step = adj.get_step_increment()
+
+        if visible < max:
+            list_widget = {}
+            i = -1
+
+            for each in self:
+                #widget x position 
+                each_x = each.compute_bounds(self)[1].get_x()
+                match self.appearance:
+                    case "IMAGE":
+                        if each_x >= visible - step - 64:
+                            i += 1
+                            list_widget[i] = each
+                            each.set_sensitive(False)
+                            continue
+                    case _:
+                        if each_x >= visible - step - 256:
+                            i += 1
+                            list_widget[i] = each
+                            each.set_sensitive(False)
+                            continue
+                each.set_sensitive(True)
+
+            if self.get_root().hamburgers[2] not in self:
+                self.append(self.get_root().hamburgers[2])
+            
+            list_widget[0].set_sensitive(True)
+            self.reorder_child_after(self.get_root().hamburgers[2], list_widget[0])
+            self.get_root().hamburgers[2].set_sensitive(True)
+            return False
+
+        if self.get_root().hamburgers[2] in self:
+            self.remove(self.get_root().hamburgers[2])
+
+        for each in self:
+            each.set_sensitive(True)
+
+        return True
 
     def get_position(self):
         """
