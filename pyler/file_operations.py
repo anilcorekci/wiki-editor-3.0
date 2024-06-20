@@ -67,8 +67,6 @@ class FileOperation():
         event.connect("pressed", lambda *_: self.kapat(_, label_text) )
         box1.set_end_widget(image1)
 
-        self.gl_b["yol"] = yol
-
         return box1
 
     def yeni(self,yol, baslik=str):
@@ -265,15 +263,22 @@ class FileOperation():
         """
         save current buffer file
         """
-        if not os.path.isfile(self.gl_b["yol"]) or save_as:
+        hbox = self.notebook.get_tab_label(self.wikieditor.current_editor.get_parent())
+        label = hbox.get_center_widget().get_tooltip_text()
+
+        file_path = "".join(label.split(":")[1:3])
+        file_path =  re.sub(r"^\s+", "", file_path)
+#        print(file_path)
+        
+        if not os.path.isfile(file_path) or save_as:
 
             dialog = get_filechooser(self,
                 desc_="Save recent changes..",
                 type_="SAVE"
             )
 
-            dialog.set_initial_name(self.gl_b["name"])
-            directory = os.path.dirname(self.gl_b["yol"])
+            dialog.set_initial_name(os.path.basename(file_path))
+            directory = os.path.dirname(file_path)
 
             if os.path.isdir(directory):
                 directory = Gio.File.new_for_path(directory)
@@ -309,14 +314,15 @@ class FileOperation():
         konu = self.wikieditor.get_konu(True)
 
         try:
-            with open( self.gl_b["yol"], "w", encoding="utf-8") as dosya:
+            with open(file_path, "w", encoding="utf-8") as dosya:
                 dosya.write(konu)
                 self.ileti.set_markup(
-                        f"<small>\t{self.gl_b['name']}\n\tfile saved.</small>"
+                        f"<small>\t{os.path.basename(file_path)}"
+                        "\n\tfile saved.</small>"
                     )
                 self.wikieditor.current_buffer.set_modified(False)
         except IOError as msj:
-            mesaj(f"{self.gl_b['yol']} File cannot be saved.." + \
+            mesaj(f"{file_path} File cannot be saved.." + \
                     f"Error Code:-2\nError message:{msj}",
                     pencere=self.wikieditor )
             return False
