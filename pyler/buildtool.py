@@ -197,7 +197,7 @@ class ToolItem():
             hb.append( create_form[each_en] )
             box.append(hb)
 
-        ekle = gtk.Button(label=" Tamam ")
+        ekle = gtk.Button(label=" Apply ")
         ekle.set_margin_top(42)
         ekle.set_margin_bottom(32)
         ekle.set_margin_start(32)
