@@ -92,7 +92,7 @@ class ToolBar(gtk.Box):
         self.sw.set_propagate_natural_width(True) ##!
         self.sw.set_propagate_natural_height(True) ##!
       #  self.sw.get_hscrollbar().set_visible(False)
-        self.sw.set_policy( gtk.PolicyType.EXTERNAL, gtk.PolicyType.NEVER )
+        self.sw.set_policy( gtk.PolicyType.EXTERNAL, True )
 
         adj = self.sw.get_hscrollbar().get_adjustment()
         adj.connect("changed", self.make_popover)
