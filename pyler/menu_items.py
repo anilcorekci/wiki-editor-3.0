@@ -142,7 +142,7 @@ class MenuItems():
         self.hamburgers = [
             MakeHamburger( self.wiki_editor, icon="applications-other"),
             MakeHamburger( self.wiki_editor, label="Düz Metin"),
-            MakeHamburger( self.wiki_editor, icon="applications-other")
+            MakeHamburger( self.wiki_editor)
         ]
 
         self.wiki_editor.hamburgers = self.hamburgers #
