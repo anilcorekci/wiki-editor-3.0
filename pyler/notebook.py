@@ -411,7 +411,7 @@ class WikiEditor(gtk.ApplicationWindow):
             konu = self.current_buffer.get_slice(start, end,1)
             return konu
 
-        self.ileti.set_text("Seçili hiç bir metin yok !")
+        self.ileti.set_text("No selected text!")
         return False
 
     def soru(self, *_):
