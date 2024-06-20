@@ -76,8 +76,8 @@ class ShowShortCuts(gtk.ShortcutsWindow):
         define shortcut section and groups
         for each key append new group
         """
-        for each, itemlist in dict_.items():
 
+        for each, itemlist in dict_.items():
             each = each.replace("_"," ").title()
 
             section = gtk.ShortcutsSection()
@@ -99,13 +99,17 @@ class ShowShortCuts(gtk.ShortcutsWindow):
         add shortcut into shorcut group
         ...
         """
+        control = []
         for keys in itemlist:
             if callable(keys[-1]):
                 continue
 
+            if keys[0] in control:
+                continue 
+
             short_cut_ = gtk.ShortcutsShortcut()
             short_cut_.set_property("title", keys[0])
-
+            control.append(keys[0])
             if type(keys[-1]) is bool :
                 if keys[-2] is None:
                     continue
@@ -116,4 +120,5 @@ class ShowShortCuts(gtk.ShortcutsWindow):
             short_cut_.set_property("shortcut-type", gtk.ShortcutType.ACCELERATOR )
 
             short_cut_.set_direction(gtk.TextDirection.RTL)
+
             self.group.add_shortcut(short_cut_)
