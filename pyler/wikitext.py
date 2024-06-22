@@ -109,11 +109,23 @@ class WikiText(gtk.ScrolledWindow):
         self.edit.set_smart_home_end(edit.SmartHomeEndType.ALWAYS)
 
         self.tbuffer.connect("cursor-moved", self.update_cursor_position)
+        self.tbuffer.connect("modified-changed", self.update_tab_on_change)
 
         self.edit.add_css_class( "wiki-editor" )
 
         return self.edit
 
+    def update_tab_on_change(self, *_):
+        app = self.get_root()
+        hbox = app.notebook.get_tab_label(self)
+
+        if self.tbuffer.get_modified():
+            if not hbox.get_start_widget():
+                image = gtk.Image(icon_name="wiki-editor-symbolic")
+                image.add_css_class("modified")
+                hbox.set_start_widget(image)
+        else:
+            hbox.set_start_widget(None)
 
     def arama(self, app, *_, replace=None):
         """
