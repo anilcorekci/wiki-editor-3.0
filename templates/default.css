@@ -224,6 +224,7 @@ notebook image:hover {
 
 notebook .modified{
     opacity: unset;
+    margin-left: 1em;
 }
 
 notebook arrow {
