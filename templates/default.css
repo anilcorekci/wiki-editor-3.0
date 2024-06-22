@@ -7,6 +7,7 @@ headerbar {
 headerbar windowhandle {
     margin-bottom: -.40em;
 }
+
 headerbar box > label {
     margin-top: -.20em;
 }
@@ -72,14 +73,14 @@ flowbox {
     transition: opacity ease-out .4s;
 }
 
-flowbox label{
+flowbox label {
     margin-top: .5em;
     margin-bottom: .01em;
 }
 
 flowbox  box:hover {
     animation-name: slide_;
-    animation-duration: 0.6s;
+    animation-duration: 1s;
     transition: ease-in-out;
 }
 
@@ -140,7 +141,7 @@ notebook {
     border-width: 0;
 }
 
-notebook tabs{
+notebook tabs {
     background-color: @headerbar_bg_color;
     margin-bottom: -.35em;
 }
@@ -166,7 +167,7 @@ notebook tab {
 
 notebook tabs tab:nth-child(2) {
     /*   color: aqua; */
-       border-left: 0;       
+       border-left: 0;
 }
 
 notebook tab:checked:nth-child(n+2) ~ :nth-child(n){
@@ -213,7 +214,7 @@ notebook image{
     opacity: 0;   
 }
 
-notebook image:hover{
+notebook image:hover {
     background-color: alpha(@theme_bg_color, 0.6);
     border-radius: 9999px;
     box-shadow: 0 0 0 1px alpha(black, 0.03),
@@ -221,7 +222,11 @@ notebook image:hover{
         0 2px 6px 2px alpha(black, .03);
 }
 
-notebook arrow{
+notebook .modified{
+    opacity: unset;
+}
+
+notebook arrow {
     border-radius: 2px;
     border-width: 0 0px 0px 0;
 
@@ -235,13 +240,13 @@ notebook arrow{
 }
 
 notebook arrow.up {
-transform: rotate(-45deg);
-margin-left: -9px;
+    transform: rotate(-45deg);
+    margin-left: -9px;
 }
 
 notebook arrow.down {
-transform: rotate(135deg);
-margin-right: -9px;
+    transform: rotate(135deg);
+    margin-right: -9px;
 }
 
 notebook arrow:hover{
@@ -254,10 +259,10 @@ notebook arrow:active{
 }
 
 @keyframes slide_1 {
-    0% { opacity:.2; box-shadow: inset -3px -3px 0px 0px;}	
-   20% { opacity:.5; box-shadow: 4px 4px 0px 0px;}	
-   40% { opacity:.2; box-shadow: inset -3px -3px 0px 0px; }	
-   100% { opacity:.5; box-shadow: 4px 4px 0px 0px; }	
+    0% { opacity:.2; box-shadow: inset -3px -3px 0px 0px;}
+   20% { opacity:.5; box-shadow: 4px 4px 0px 0px;}
+   40% { opacity:.2; box-shadow: inset -3px -3px 0px 0px; }
+   100% { opacity:.5; box-shadow: 4px 4px 0px 0px; }
 }
 
 popover arrow {
@@ -265,12 +270,13 @@ popover arrow {
     background-color: unset;
     box-shadow: unset;
 }
+
 popover arrow:hover{
     animation: unset;
 }
 /*styling for Gtk.searchbar */
 
-searchbar > revealer  {
+searchbar > revealer {
     background-color: alpha(@theme_bg_color, .99);
     box-shadow: 0 0 0 1px alpha(black, 0.03),
         0 1px 3px 1px alpha(black, .07),
@@ -279,12 +285,12 @@ searchbar > revealer  {
     transition: margin ease-in-out 0.6s; 
 }
 
-searchbar > revealer > box  image:hover{
+searchbar > revealer > box  image:hover {
     background-color: alpha(@theme_fg_color, 0.050);
     border-radius: 6px;
 }
 
-searchbar > revealer > box  image:active{
+searchbar > revealer > box  image:active {
     animation: slide_ .5s linear infinite;
 }
 
@@ -303,27 +309,29 @@ searchbar > revealer button {
 
 /*styling for Gtk.checkbutton */
 
-checkbutton:checked{
+checkbutton:checked {
     background-color: alpha(@theme_fg_color, .2);
     animation-name: slide_;
     animation-duration: 200ms;
     transition:ease-out;
 }
 
-checkbutton:checked > label{
+checkbutton:checked > label {
     margin-left:1em;
     margin-right: 1em;
 }
 
-button{
+button {
     color: unset;
 }
+
 .hide-button{
     transform: scale(0.3);
 }
 .hide-button:hover{
     transform: scale(1);
 }
+
 /*styling for Gtk.Progressbar */
 progressbar trough, progress {
     min-height: .3em;
