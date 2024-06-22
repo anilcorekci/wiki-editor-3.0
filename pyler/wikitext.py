@@ -123,6 +123,7 @@ class WikiText(gtk.ScrolledWindow):
             if not hbox.get_start_widget():
                 image = gtk.Image(icon_name="wiki-editor-symbolic")
                 image.add_css_class("modified")
+                app.add_custom_styling(image)		    
                 hbox.set_start_widget(image)
         else:
             hbox.set_start_widget(None)
