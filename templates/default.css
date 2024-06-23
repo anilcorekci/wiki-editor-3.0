@@ -223,18 +223,11 @@ notebook image:hover {
 }
 
 notebook .modified {
-    opacity: unset; 
-    margin-left: 2em;
+    opacity: unset;
     margin-top: 0.8em;
     margin-bottom: 0.8em;
     background-color: alpha(@theme_fg_color, 0.3);
     border-radius: 50%;
-}
-
-notebook .modified:hover{
-    background-color: unset;
-    border-radius: unset;
-    box-shadow: unset;
 }
 
 notebook arrow {
