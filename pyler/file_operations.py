@@ -46,14 +46,16 @@ class FileOperation():
 
         box1 = gtk.CenterBox()
         box1.set_hexpand(True)
-
+        
         label = gtk.Label(label=label_text, xalign=0.5)
         label.set_ellipsize(3)
         label.set_halign(gtk.Align.CENTER)
-
         label.set_width_chars(17)
 
-        box1.set_center_widget(label)
+        box = gtk.Box()
+        box.append(label)
+
+        box1.set_center_widget(box)
         label.set_tooltip_text(f"File Path: {yol}")
 
         image1 = get_stock("application-exit-symbolic")
@@ -68,6 +70,26 @@ class FileOperation():
         box1.set_end_widget(image1)
 
         return box1
+
+    def get_file_path(self, label=None ,tab=None):
+        """
+        find label in tab returns it or
+        its tooltip
+        """
+        if tab:
+            center_box = tab[0].get_tab_label(tab[1])
+        else:
+            center_box = self.notebook.get_tab_label(
+                self.wikieditor.current_editor.get_parent()
+            )
+
+        hbox = center_box.get_center_widget()
+        label_widget = hbox.get_last_child()
+
+        if label:
+            return label_widget
+
+        return label_widget.get_tooltip_text()
 
     def yeni(self,yol, baslik=str):
         """
@@ -136,10 +158,10 @@ class FileOperation():
 
             get_n_widget = self.notebook.get_nth_page(i)
             # return wiki_editor
-            get_n_widget = self.notebook.get_tab_label(get_n_widget)
-            # return box
-            get_n_info = get_n_widget.get_center_widget().get_text()
-            # return box child list_ #label/image
+            get_n_widget = self.get_file_path(label=True)
+            # return label
+            get_n_info = get_n_widget.get_text()
+            # get_text
 
             if label_text != get_n_info:
                 continue
@@ -204,8 +226,7 @@ class FileOperation():
                     break
 
                 self.notebook.set_current_page(i)
-                hbox = self.notebook.get_tab_label(self.wikieditor.current_editor.get_parent())
-                label = hbox.get_center_widget().get_tooltip_text()
+                label = self.get_file_path()
 
                 files[i] = "".join(label.split(":")[1:3])
 
@@ -263,8 +284,7 @@ class FileOperation():
         """
         save current buffer file
         """
-        hbox = self.notebook.get_tab_label(self.wikieditor.current_editor.get_parent())
-        label = hbox.get_center_widget().get_tooltip_text()
+        label = self.get_file_path()
 
         file_path = "".join(label.split(":")[1:3])
         file_path =  re.sub(r"^\s+", "", file_path)
