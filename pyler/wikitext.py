@@ -121,16 +121,20 @@ class WikiText(gtk.ScrolledWindow):
         """
         app = self.get_root()
         hbox = app.notebook.get_tab_label(self)
+        hbox = hbox.get_center_widget()
 
         if self.tbuffer.get_modified():
             if not gtk.Image in hbox:
                 image = gtk.Image()#icon_name="wiki-editor-symbolic")
                 image.set_pixel_size(4)
+                image.set_margin_start(3)
                 image.add_css_class("modified")
                 app.add_custom_styling(image)
-                hbox.set_start_widget(image)
+                app.notebook.emit("switch-page", self, app.gl_b["tab_n_page"])
+                hbox.prepend(image)
         else:
-            hbox.set_start_widget(None )
+            hbox.remove(hbox.get_first_child() )
+            app.notebook.emit("switch-page", self, app.gl_b["tab_n_page"])
 
     def arama(self, app, *_, replace=None):
         """
