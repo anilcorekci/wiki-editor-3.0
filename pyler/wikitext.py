@@ -116,17 +116,21 @@ class WikiText(gtk.ScrolledWindow):
         return self.edit
 
     def update_tab_on_change(self, *_):
+        """
+        update_tab_on modify _change
+        """
         app = self.get_root()
         hbox = app.notebook.get_tab_label(self)
 
         if self.tbuffer.get_modified():
-            if not hbox.get_start_widget():
-                image = gtk.Image(icon_name="wiki-editor-symbolic")
+            if not gtk.Image in hbox:
+                image = gtk.Image()#icon_name="wiki-editor-symbolic")
+                image.set_pixel_size(4)
                 image.add_css_class("modified")
-                app.add_custom_styling(image)		    
+                app.add_custom_styling(image)
                 hbox.set_start_widget(image)
         else:
-            hbox.set_start_widget(None)
+            hbox.set_start_widget(None )
 
     def arama(self, app, *_, replace=None):
         """
