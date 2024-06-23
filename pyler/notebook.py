@@ -340,9 +340,11 @@ class WikiEditor(gtk.ApplicationWindow):
 
             if self.current_buffer.get_modified():
                 if isinstance(box.get_first_child(), gtk.Label ):
-                    image = gtk.Image(icon_name="wiki-editor-symbolic")
+                    image = gtk.Image()#icon_name="wiki-editor-symbolic")
                     image.set_pixel_size(8)
                     image.set_margin_end(12)
+                    image.add_css_class("modified")
+                    self.add_custom_styling(image)
                     box.prepend(image)
 
             elif isinstance(box.get_first_child(), gtk.Image ):
