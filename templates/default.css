@@ -12,6 +12,13 @@ headerbar box > label {
     margin-top: -.20em;
 }
 
+headerbar .modified {
+    margin-top: 1.1em;
+    margin-bottom: 1.1em;
+    background-color: alpha(@theme_fg_color, 0.3);
+    border-radius: 50%;
+}
+
 headerbar box > button {
     background-color: transparent;
 }
