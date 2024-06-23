@@ -132,12 +132,13 @@ class WikiEditor(gtk.ApplicationWindow):
 
         self.headerbar.pack_end(self.center_box)
 
-        self.headerbar.set_title_widget(
-            gtk.Label(label=" Wiki Editor  ",
+        self.title = gtk.Label(  label=" Wiki Editor  ",
             width_chars=6,justify=2,
-            use_markup=True, ellipsize=3 )
+            use_markup=True, ellipsize=3
         )
-        self.title = self.headerbar.get_title_widget()
+        box = gtk.Box()
+        box.append(self.title)
+        self.headerbar.set_title_widget(box)
         self.title.get_layout().set_spacing(2.7*1024)
 
         table = gtk.Box(orientation=gtk.Orientation.VERTICAL)
@@ -152,7 +153,7 @@ class WikiEditor(gtk.ApplicationWindow):
         self.horizontal = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
         self.horizontal.append(gtk.Overlay(child=self.notebook))
         self.horizontal.prepend(toolbar.scroll)
-        
+
         #table.append(self.webview)
         self.redkit, self.preview = Redkit(table, self.horizontal).widgets
      #   table.append(Terminal().interface)
@@ -286,8 +287,8 @@ class WikiEditor(gtk.ApplicationWindow):
            label = hbox.get_first_child()
         """
 
-        label = tab.get_tab_label(widget).get_center_widget()
-        file_path = label.get_tooltip_text()
+        label = self.operations.get_file_path(label=True,tab=[tab, widget])
+        file_path = self.operations.get_file_path(tab=[tab, widget])
 
         self.gl_b["tab_n_page"] = tab_n_page
         self.gl_b["name"] = label.get_text()
@@ -322,8 +323,10 @@ class WikiEditor(gtk.ApplicationWindow):
             f'{cute_title}'
             "</small></span>")
 
-        self.title.set_tooltip_text(label.get_tooltip_text())
-        self.guess_language(label.get_tooltip_text())
+        self.title.set_tooltip_text(file_path)
+        self.guess_language(file_path)
+
+
         #call after signal ended!
         def get_numbers():
             """
@@ -333,6 +336,17 @@ class WikiEditor(gtk.ApplicationWindow):
             this is a fix for updating current buffer..
             #hint: see line numbers update without it.
             """
+            box = self.title.get_parent()
+
+            if self.current_buffer.get_modified() and isinstance(box.get_first_child(), gtk.Label ):
+                image = gtk.Image(icon_name="wiki-editor-symbolic")
+                image.set_pixel_size(14)
+                image.set_margin_end(12)
+                box.prepend(image)
+            else:
+                if  isinstance(box.get_first_child(), gtk.Image ):
+                    box.remove(box.get_first_child() )
+
             try:
                 self.current_buffer.emit("cursor-moved")
             except AttributeError:
