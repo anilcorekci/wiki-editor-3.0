@@ -338,14 +338,15 @@ class WikiEditor(gtk.ApplicationWindow):
             """
             box = self.title.get_parent()
 
-            if self.current_buffer.get_modified() and isinstance(box.get_first_child(), gtk.Label ):
-                image = gtk.Image(icon_name="wiki-editor-symbolic")
-                image.set_pixel_size(14)
-                image.set_margin_end(12)
-                box.prepend(image)
-            else:
-                if  isinstance(box.get_first_child(), gtk.Image ):
-                    box.remove(box.get_first_child() )
+            if self.current_buffer.get_modified():
+                if isinstance(box.get_first_child(), gtk.Label ):
+                    image = gtk.Image(icon_name="wiki-editor-symbolic")
+                    image.set_pixel_size(14)
+                    image.set_margin_end(12)
+                    box.prepend(image)
+
+            elif isinstance(box.get_first_child(), gtk.Image ):
+                box.remove(box.get_first_child() )
 
             try:
                 self.current_buffer.emit("cursor-moved")
