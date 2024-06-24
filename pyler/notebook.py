@@ -188,7 +188,7 @@ class WikiEditor(gtk.ApplicationWindow):
 
         for file in files_recieved:
             file = file.get_path()
-            if file not in files:
+            if file not in files.values():
                 self.operations.yeni(file)
                 self.operations.open(file)
 
