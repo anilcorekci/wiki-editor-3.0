@@ -336,19 +336,22 @@ class WikiEditor(gtk.ApplicationWindow):
             this is a fix for updating current buffer..
             #hint: see line numbers update without it.
             """
-            box = self.title.get_parent()
+            try:
+                box = self.title.get_parent()
 
-            if self.current_buffer.get_modified():
-                if isinstance(box.get_first_child(), gtk.Label ):
-                    image = gtk.Image()#icon_name="wiki-editor-symbolic")
-                    image.set_pixel_size(8)
-                    image.set_margin_end(12)
-                    image.add_css_class("modified")
-                    self.add_custom_styling(image)
-                    box.prepend(image)
+                if self.current_buffer.get_modified():
+                    if isinstance(box.get_first_child(), gtk.Label ):
+                        image = gtk.Image()#icon_name="wiki-editor-symbolic")
+                        image.set_pixel_size(8)
+                        image.set_margin_end(12)
+                        image.add_css_class("modified")
+                        self.add_custom_styling(image)
+                        box.prepend(image)
 
-            elif isinstance(box.get_first_child(), gtk.Image ):
-                box.remove(box.get_first_child() )
+                elif isinstance(box.get_first_child(), gtk.Image ):
+                    box.remove(box.get_first_child() )
+            except AssertionError:
+                pass
 
             try:
                 self.current_buffer.emit("cursor-moved")
