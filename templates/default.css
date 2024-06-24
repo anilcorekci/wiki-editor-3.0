@@ -17,6 +17,7 @@ headerbar .modified {
     margin-bottom: 1.1em;
     background-color: alpha(@theme_fg_color, 0.3);
     border-radius: 50%;
+    transform: scale(.75);
 }
 
 headerbar box > button {
@@ -235,6 +236,7 @@ notebook .modified {
     margin-bottom: 0.8em;
     background-color: alpha(@theme_fg_color, 0.3);
     border-radius: 50%;
+    transform: scale(.75);
 }
 
 notebook arrow {
