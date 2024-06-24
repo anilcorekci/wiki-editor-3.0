@@ -122,7 +122,7 @@ class FileOperation():
 
         self.notebook.append_page( wiki_text, page_title)
         self.notebook.set_tab_reorderable(wiki_text,True) #!!
-    #   self.notebook.set_tab_detachable(wiki_text, True)
+    #    self.notebook.set_tab_detachable(wiki_text, True)
     # https://docs.gtk.org/gtk4/method.Notebook.set_tab_detachable.html
 
         i = -1
@@ -212,23 +212,34 @@ class FileOperation():
 
         close()
 
+    def get_file_list(self):
+        """
+        return filenames in a dict
+        """
+        files = {}
+        i = -1
+
+        while i < self.notebook.get_n_pages():
+            i+=1
+            if self.notebook.get_n_pages() <= 0:
+                break
+
+            self.notebook.set_current_page(i)
+            label = self.get_file_path()
+            file_path = "".join(label.split(":")[1:3])
+            files[i] =  re.sub(r"^\s+", "", file_path)
+
+        return files
+
     def open_file(self, _):
         """
         open new file from path
         """
         def response_(_, res_id):
-            files = {}
-            i = -1
-
-            while i < self.notebook.get_n_pages():
-                i+=1
-                if self.notebook.get_n_pages() <= 0:
-                    break
-
-                self.notebook.set_current_page(i)
-                label = self.get_file_path()
-
-                files[i] = "".join(label.split(":")[1:3])
+            """
+            apply chosen on response..
+            """
+            files = self.get_file_list()
 
             if not res_id.had_error():
                 file_uri = dialog.open_finish(res_id).get_uri()
@@ -236,7 +247,7 @@ class FileOperation():
                 file_name = PARSER.unquote(url_data.path)
 
                 for i, name in files.items():
-                    if str(name) in str(file_name) or str(file_name) in str(name):
+                    if name == file_name:
                         self.notebook.set_current_page(i)
                         self.ileti.set_markup("<b>"+
                             f"<i>The file : {os.path.basename(file_name)}</i>"+\
