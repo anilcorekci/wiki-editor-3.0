@@ -14,6 +14,10 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('GtkSource', '5')
 
+
+from gi.repository import Gdk, GObject
+
+
 from gi.repository import Gtk as gtk
 from gi.repository import GtkSource as edit
 from gi.repository import GLib
@@ -162,6 +166,38 @@ class WikiEditor(gtk.ApplicationWindow):
 
         self.add_custom_styling(self)
         self.add_custom_styling(self.progress)
+
+
+        drop_controller = gtk.DropTarget.new(
+            type=GObject.TYPE_NONE, actions=Gdk.DragAction.COPY
+        )
+        drop_controller.set_gtypes([Gdk.FileList, str])
+        drop_controller.connect('drop', self.on_drop)
+        self.add_controller(drop_controller)
+
+    def on_drop( self, _, value, *__):
+        """
+        open files on drop recieved
+        ...
+        """
+        if not isinstance(value, Gdk.FileList):
+            return False
+
+        files = self.operations.get_file_list()
+        files_recieved = value.get_files()
+
+        for file in files_recieved:
+            file = file.get_path()
+            for i, name in files.items():
+                if name == file:
+                    self.notebook.set_current_page(i)
+                    self.ileti.set_markup("<b>"+
+                        f"<i>The file : {os.path.basename(file)}</i>"+\
+                        "</b> is already open..")
+                    return False
+
+            self.operations.yeni(file)
+            self.operations.open(file)
 
     def notebook_scroll(self, _, position, *__):
         """
