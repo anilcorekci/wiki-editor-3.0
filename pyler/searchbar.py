@@ -167,7 +167,7 @@ class SearchBar:
 
         if buffer in self.renk:
             buffer.remove_tag(self.renk[buffer], start, end)
-            del self.renk[buffer]
+        #    del self.renk[buffer]
 
         self.renk[buffer] = buffer.create_tag(background="yellow",foreground="#000000")
 
