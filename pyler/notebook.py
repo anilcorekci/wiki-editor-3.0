@@ -188,16 +188,9 @@ class WikiEditor(gtk.ApplicationWindow):
 
         for file in files_recieved:
             file = file.get_path()
-            for i, name in files.items():
-                if name == file:
-                    self.notebook.set_current_page(i)
-                    self.ileti.set_markup("<b>"+
-                        f"<i>The file : {os.path.basename(file)}</i>"+\
-                        "</b> is already open..")
-                    return False
-
-            self.operations.yeni(file)
-            self.operations.open(file)
+            if file not in files:
+                self.operations.yeni(file)
+                self.operations.open(file)
 
     def notebook_scroll(self, _, position, *__):
         """
