@@ -20,6 +20,7 @@ class WikiText(gtk.ScrolledWindow):
     getting variables from __main__ hito
     """
     edit = None
+    seachbar = None
 
     def __init__(self, ileti, hamburgers):
         """
@@ -110,6 +111,7 @@ class WikiText(gtk.ScrolledWindow):
 
         self.tbuffer.connect("cursor-moved", self.update_cursor_position)
         self.tbuffer.connect("modified-changed", self.update_tab_on_change)
+        self.tbuffer.connect("changed", self.update_last_iter)
 
         self.edit.add_css_class( "wiki-editor" )
 
@@ -141,7 +143,15 @@ class WikiText(gtk.ScrolledWindow):
         calls searchbar
         ..
         """
-        SearchBar( app, *_, replace=replace)
+        self.seachbar = SearchBar( app, *_, replace=replace)
+
+    def update_last_iter(self, buffer):
+        """
+        update last tag position
+        on change
+        """
+        if self.seachbar and self.seachbar.previous_one:
+            self.seachbar.previous_one = None
 
     def update_cursor_position(self, *_):
         """
