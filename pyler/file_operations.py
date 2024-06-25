@@ -46,6 +46,32 @@ class FileOperation():
 
         box1 = gtk.CenterBox()
         box1.set_hexpand(True)
+        box1.props.margin_end = 3
+        box1.props.margin_start = 12
+
+        lang_name = self.wikieditor.guess_language(yol, name=True)
+
+        match lang_name:
+            case lang_name if "text/" in lang_name:
+                stock = get_stock(f"text-{lang_name.split("/")[-1]}")
+    
+            case lang_name if  "shell" in lang_name:
+                stock = get_stock(f"application-x-{lang_name}")
+
+            case lang_name if "application" in lang_name:
+                stock = get_stock(f"application-x-{lang_name.split("/")[-1]}")
+
+            case lang_name if "markdown" in lang_name:
+                stock = get_stock(f"text-{lang_name}")
+
+            case lang_name if "info" in lang_name:
+                stock = get_stock(f"gnome-mime-application-x-gnome-app-info")
+
+            case _:
+                stock = get_stock(f"text-x-{lang_name}")
+
+        stock.set_margin_end(12)
+        box1.set_start_widget(stock)
         
         label = gtk.Label(label=label_text, xalign=0.5)
         label.set_ellipsize(3)
