@@ -208,7 +208,7 @@ class WikiEditor(gtk.ApplicationWindow):
 
 #    notebook_event.connect("decelerate", lambda *_: notebook_event.emit("scroll-begin"))
 
-    def guess_language(self, file_path):
+   def guess_language(self, file_path, name=None):
         """
         guess and update language for menu_button
         """
@@ -220,7 +220,11 @@ class WikiEditor(gtk.ApplicationWindow):
             self.hamburgers[1].set_label(lang_name)
 
         except AttributeError:
-            self.hamburgers[1].set_label("text/plain")
+            lang_name = "text/plain"
+            self.hamburgers[1].set_label(lang_name)
+        
+        if name:
+            return lang_name
 
         return language
 
