@@ -14,10 +14,7 @@ class SetText():
     define colors and pango font
     """
     flag = gtk.TextSearchFlags.TEXT_ONLY
-    font = pango.FontDescription.new()
-    font.set_family("monospace")
-    font.set_weight(1000)
-    font.set_stretch(8)
+
 
     underline = gdk.RGBA()
     underline.parse("rgba(233, 42, 99, 0.400)")
@@ -40,11 +37,12 @@ class SetText():
 
         self.tag = self.buffer.create_tag(
             underline_rgba=self.underline,
-            #   indent=6, fallback=True,
-            font_desc=self.font, left_margin=1,
-            right_margin=1, foreground_rgba=fg,
-            underline_set=True, underline=7,
-            # letter_spacing=3072
+            left_margin=1,
+            right_margin=1,
+            stretch=7,
+            stretch_set=True,
+            foreground_rgba=fg,
+            underline=4,
         )
 
         self.apply()
@@ -76,7 +74,12 @@ class SetText():
 
         self.buffer.insert_at_cursor(self.text)
         iter_ = self.buffer.get_iter_at_mark(self.buffer.get_insert())
-        start, end = iter_.backward_search(self.text, gtk.TextSearchFlags.TEXT_ONLY, None)
+
+        start, end = iter_.backward_search( self.text,
+            gtk.TextSearchFlags.TEXT_ONLY, 
+            None 
+        )
+
         self.tag.set_property("underline", False)
      #   self.tag.set_property("background_rgba", self.n_text)
 
@@ -162,7 +165,7 @@ class SetText():
                 i+=1
 
         if not each_tag:
-            each_tag = self.buffer.create_tag(font_desc=self.font, foreground_rgba=self.n_text)
+            each_tag = self.buffer.create_tag(foreground_rgba=self.n_text)
 
         self.buffer.apply_tag(each_tag, start, end)
         return start, end
