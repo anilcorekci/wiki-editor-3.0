@@ -122,9 +122,19 @@ class SetText():
             found = start.backward_search( self.text[in_tag], self.flag, None )
             if not found:
                 continue
-            start, end = found
+            try:
+                start, end = found
+            except UnboundLocalError:
+             #   print("fixed..")
+                break
 
-        return start, end
+        try:
+            return start, end
+        except UnboundLocalError:
+            end = start.copy()
+            end.forward_word_end()
+            #print("fixed..")
+            return start, end
 
     def find_each(self, in_tag, each_tag=None):
         """
