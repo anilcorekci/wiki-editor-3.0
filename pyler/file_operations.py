@@ -74,6 +74,7 @@ class FileOperation():
                 stock = get_stock(f"text-x-{lang_name}")
 
         stock.set_margin_end(12)
+        stock.set_tooltip_text(stock.get_icon_name() )
         box1.set_start_widget(stock)
         
         label = gtk.Label(label=label_text, xalign=0.5)
