@@ -58,7 +58,10 @@ class FileOperation():
             case lang_name if  "shell" in lang_name:
                 stock = get_stock(f"application-x-{lang_name}")
 
-            case lang_name if "application" in lang_name:
+            case lang_name if "xml" in lang_name:
+                stock = get_stock(f"application-xml")
+
+            case lang_name if "application/" in lang_name:
                 stock = get_stock(f"application-x-{lang_name.split("/")[-1]}")
 
             case lang_name if "markdown" in lang_name:
