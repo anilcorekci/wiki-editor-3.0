@@ -43,6 +43,8 @@ class WikiEditor3(Adw.Application):
         self.add_option("licence", "print licence and exit")
         self.add_option("shortcuts", "print shortctus and exit")
 
+        self.style_manager = self.get_style_manager()
+
         self.connect('activate', self.on_activate)
 
     def add_option(self, option, desc):
