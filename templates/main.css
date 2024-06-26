@@ -35,6 +35,10 @@ headerbar button:hover{
     background-color: rgba(0, 0, 0, 0.164);
 }
 
+headerbar .modified {
+    margin-top: 1.3em;
+    margin-bottom: 1.3em;
+}
 
 /* Style for Gtk.Box */
 box {
