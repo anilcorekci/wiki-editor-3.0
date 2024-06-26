@@ -62,7 +62,7 @@ class SetText():
                 self.tag.set_property("style", pango.Style.ITALIC)
             
             case "</big>":
-                self.tag.set_property("scale", 2)
+                self.tag.set_property("scale", 1.4)
                 self.tag.set_property("underline-set", False)
 
             case "</small>":
@@ -86,8 +86,13 @@ class SetText():
                 self.tag.set_property("foreground_rgba", self.fg)
 
             case start_tag if "code" in start_tag:
-                self.fg.parse("rgba(222, 221, 218, .9)")
+                self.fg.parse("rgba(192, 191, 188, 0.723)")
                 self.tag.set_property("background-rgba", self.fg)
+            #    self.tag.set_property("paragraph_background","#808080")
+                self.fg.parse("rgba(1, 28, 23, .8)")
+                self.tag.set_property("foreground-rgba", self.fg)
+                self.tag.set_property("underline-set", False)
+            #    self.tag.set_property("indent", 20)
 
             case "[":
                 self.tag.set_property("underline", 1)
@@ -96,12 +101,14 @@ class SetText():
                 self.tag.set_property("underline", 2)
 
             case "==":
-                self.tag.set_property("overline", 1)
-                self.tag.set_property("underline", 1)
+                self.tag.set_property("underline-set", False)
                 self.fg.parse(self.color)
-                self.tag.set_property("underline-rgba", self.fg)
-                self.tag.set_property("scale", 1.4)
+                self.tag.set_property("scale", 1.1)
 
+                if "==" in self.text[1]:
+                    self.tag.set_property("scale", 
+                        1.1 + len(self.text[1].split("==")) / 10
+                    )
 
     def apply(self):
         """
