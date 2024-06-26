@@ -14,7 +14,7 @@ class SetText():
     define colors and pango font
     """
     flag = gtk.TextSearchFlags.TEXT_ONLY
-
+    fg = gdk.RGBA()
 
     underline = gdk.RGBA()
     underline.parse("rgba(233, 42, 99, 0.400)")
@@ -47,6 +47,62 @@ class SetText():
 
         self.apply()
 
+    def set_instances(self):
+        """
+        set instance of tags
+        in pango markup
+        """
+        start_tag, end_tag = self.text[0], self.text[2]
+        
+        match end_tag:
+            case "'''":
+                self.tag.set_property("weight", pango.Weight.BOLD)
+
+            case "''":
+                self.tag.set_property("style", pango.Style.ITALIC)
+            
+            case "</big>":
+                self.tag.set_property("scale", 2)
+                self.tag.set_property("underline-set", False)
+
+            case "</small>":
+                self.tag.set_property("scale", .7)
+
+            case "</sup>":
+                self.tag.set_property("rise", 1024*7)
+                self.tag.set_property("scale", .9)
+
+            case "</sub>":
+                self.tag.set_property("rise", -1024*7)
+                self.tag.set_property("scale", .9)
+
+        match start_tag:
+            case start_tag if "blue" in start_tag:
+                self.fg.parse("blue")
+                self.tag.set_property("foreground_rgba", self.fg)
+
+            case start_tag if "red" in start_tag:
+                self.fg.parse("red")
+                self.tag.set_property("foreground_rgba", self.fg)
+
+            case start_tag if "code" in start_tag:
+                self.fg.parse("rgba(222, 221, 218, .9)")
+                self.tag.set_property("background-rgba", self.fg)
+
+            case "[":
+                self.tag.set_property("underline", 1)
+
+            case "[[":
+                self.tag.set_property("underline", 2)
+
+            case "==":
+                self.tag.set_property("overline", 1)
+                self.tag.set_property("underline", 1)
+                self.fg.parse(self.color)
+                self.tag.set_property("underline-rgba", self.fg)
+                self.tag.set_property("scale", 1.4)
+
+
     def apply(self):
         """
         apply text changes
@@ -62,8 +118,10 @@ class SetText():
         self.buffer.delete(start, end)
         iter_ = self.buffer.get_iter_at_mark(self.buffer.get_insert())
 
-        if isinstance(self.text, list):
+        if isinstance(self.text, list):        
+            self.set_instances()
             self.buffer.insert_at_cursor("".join(self.text))
+
             self.find_each(0)
             self.find_each(2)
 
