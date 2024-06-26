@@ -403,10 +403,15 @@ class MenuItems():
             add_custom_styling( css=MAIN)
             add_custom_styling( self.wiki_editor)
             action.set_state(GLIB_TRUE)
+            self.wiki_editor.app.\
+                style_manager.set_property("color-scheme", 3)
+
         else:
             add_custom_styling(css=DEFAULT)
             add_custom_styling( self.wiki_editor)
             action.set_state(GLIB_FALSE)
+            self.wiki_editor.app.\
+                style_manager.set_property("color-scheme", 0)
 
         self.update_db(action)
 
