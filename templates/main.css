@@ -1,250 +1,21 @@
-
-/*define styles colors under root
-
-Maybe later ...
 /* Style for Gtk.Notebook */
+
+@import url('./default.css');
+
+/* Style for Gtk.label in Gtk.Box */
+box > label {
+    color: #ffffff;
+    margin: 1px;
+    padding: 2px;
+}
+
 notebook {
   /*  border: 1px solid #01bd94; */
-    border-radius: 4px;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.596) 0%,rgba(0, 0, 0, 0.514) 1%,rgb(0, 0, 0) 100%);  
-    margin-top:0px;
-    margin-right: 0px;
-    margin-left: 0px;
-    border-width: 0;
 }
 
-notebook tab:active {
-    background-color: #4e125a;
-    color: #fafafa;
-}
-
-notebook tab {
-    box-shadow: inset 0 0 1px 0 #000000c0;
-    border-radius: .5px;
-    border-image: linear-gradient(
-            alpha(@headerbar_bg_color, .5) 20%,
-            alpha(@theme_fg_color, .1) 80%,
-            @headerbar_bg_color 30%)
-            1 repeat;
-    border-left: solid 1.3px;
-    margin-top: 6px;
-    margin-bottom: 6px;
-}
-
-notebook tabs tab:nth-child(2) {
-    /*   color: aqua; */
-       border-left: 0;       
-}
-
-notebook tab:checked:nth-child(n+2) ~ :nth-child(n){
-    border-right: solid 1.3px;
-    border-left:0;
-}
-
-notebook tab:checked:nth-child(n) ~ :nth-last-child(2) {
-    border-right: 0;
-    border-left: 0;
-}
-
-notebook tab:checked {
-    box-shadow: inset 0 2px 0 #4d4d4d67;
-    background-color:#00000013;
-    border-right: 0;
-    border-left: 0;
-    border-radius: 4px;
-}
-
-notebook tab:checked image{
-    opacity: 1;
-}
-
-notebook tab label{
-    margin-left: 14px;
-}
-
-notebook tab:hover image  {
-    opacity: 1;
-}
-
-notebook image{
-    margin-top: 4px;
-    margin-bottom: 5px;
-    margin-left: 1px;
-    margin-right: -3px;
-    padding: 2px 2px 2px;
-    opacity: 0;
-}
-
-notebook image:hover{
-    background-color: rgba(245, 245, 245, 0.100);
-    border-radius: 50%;
-    box-shadow: 0 0 0 1px alpha(rgba(255, 255, 255, 0.342), 0.03),
-        0 1px 3px 1px alpha(rgb(0, 0, 0), .07),
-        0 2px 6px 2px alpha(rgb(0, 0, 0), .03);
-}
-
-notebook arrow{
-    border-radius: 2px;
-    margin: 0px 8px 0px 8px;
-    opacity: .2;
-    margin-top: 9px;
-    margin-bottom: 9px;
-    box-shadow: inset -3px -3px 0px 0px;
-    padding: .01px;
-    border-width: 0 0px 0px 0;
-    background-color: rgba(240, 248, 255, 0);
-}
-
-notebook arrow.up {
-    transform: rotate(-45deg);
-    margin-left: -9px;
-}
-
-notebook arrow.down {
-    transform: rotate(135deg);
-    margin-right: -9px;
-}
-
-notebook arrow:hover{
-    animation: slide_1 .5s linear infinite;
-}
-
-notebook arrow:active{
-    background-color: rgba(170, 170, 170, 0.164);
-    border-radius: 80%;
-}
-
-@keyframes slide_1 {
-    0% { opacity:.2; box-shadow: inset -3px -3px 0px 0px;}	
-   20% { opacity:.5; box-shadow: 4px 4px 0px 0px;}	
-   40% { opacity:.2; box-shadow: inset -3px -3px 0px 0px; }	
-   100% { opacity:.5; box-shadow: 4px 4px 0px 0px; }	
-}
-
-/*
-notebook:hover {
-    background-image: linear-gradient(to bottom, rgba(21, 133, 6, 0.5) 0%,rgba(2, 2, 2, 0.404) 1%,rgba(70, 136, 223, 0.884) 100%);
-}
-
-/* Style for gtk.Flowbox */
-flowbox box {
-    min-width: 32px;
-    margin: 0;
-    background-clip:content-box;
-
-}
-
-flowbox image{
-    filter: grayscale(1) contrast(1) brightness(1);
-}
-flowbox image:hover{
-    filter: unset;
-}
-
-flowbox  box:hover {
-    animation-name: slide_;
-    animation-duration: 2s;
-    transition: ease-in-out;
-}
-
-@keyframes slide_ {
-    0% {
-        transform: scale(1.4);
-        opacity: .2;
-    }
-    50%{
-        transform: scale(1.3);
-        opacity: .9;
-    }
-    75% {
-        transform: scale(1.1);
-        opacity: .7;
-    }
-    100% {
-        transform: scale(1.0);
-        opacity: 1.0;
-    }
-}
-
-/* Style for gtk.ScrolledWindow */
-
-scrolledwindow {
- /*   min-height: 85px; */
- /*   min-width: 1200px;*/
-    border-radius: 2px;
-    background-image: linear-gradient(to bottom, rgb(0, 0, 0) 0%,rgba(0, 0, 0, 0.76) 1%,rgba(56, 5, 54, 0.884) 100%);
-    border-color: transparent;
-}
-
-scrolledwindow scrollbar{
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.664) 0%,rgba(0, 0, 0, 0.726) 1%,rgba(56, 5, 54, 0.658) 100%);
-    color: rgb(153, 49, 136);
-    border-color: transparent;
-    border-radius: 6px;
-}
-
-box > scrolledwindow scrollbar{
-    transform: scale(.8 , .1);
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.671) 0%,rgba(0, 0, 0, 0.411) 1%,rgba(0, 0, 0, 0.726) 100%);
-}
-box > scrolledwindow scrollbar:hover{
-    color: #ff3888;
-    border-radius: 10px;
-    border-color: transparent;
-    transform: scale(.5, .08);
-    background-color: #1f151f;
-
-}
-box > scrolledwindow scrollbar:active{
-    transform: scale(.5, .08);
-    border-color: transparent;
-}
-box > scrolledwindow scrollbar bar{
-    transform: scale(1.4,1);
-}
-box > scrolledwindow scrollbar bar:hover{
-    border-radius: 10px;
-}
-box > scrolledwindow scrollbar bar:active{
-    transform: scale( 1.4, 1.8);
-}
-
-
-/****
-for horizontal placement
-box > scrolledwindow scrollbar{
-    transform: scale(.1, 1);
-    background-image: linear-gradient(to bottom, rgba(71, 18, 40, 0) 0%,rgba(255, 255, 255, 0.01) 1%,rgba(56, 5, 54, 0.212) 100%);
-}
-box > scrolledwindow scrollbar:hover{
-    color: #ff3888;
-    border-radius: 2px;
-}
-
-box > scrolledwindow scrollbar:active{
-    color: #ff8ebb;
-    border-radius: 2.2px;
-}
-******/
-
-/* Style for Window appearance */
-
-window {
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.863) 0%,rgba(32, 11, 32, 0.925) 1%,rgb(85, 9, 82) 100%);
-    color: #000000cb;
-}
-
-window stack {
-    background-image: linear-gradient(to bottom, rgba(43, 23, 54, 0.863) 0%,rgba(32, 11, 32, 0.925) 1%,rgba(0, 0, 0, 0.671) 100%);
-}
-
-window selection {
-    background-color: #690333b2;
-    color: #fafafa;
-}
-
-window selection:active {
-    background-color: #690333cc;
+notebook tabs {
+    background-color: #000000;
     color: #fafafa;
 }
 
@@ -253,16 +24,7 @@ window selection:active {
 headerbar {
     background-color:rgba(0, 0, 0, 0.678) ;
     opacity: .9;
-    margin-top: -.15em;
 }
-
-headerbar windowhandle {
-    margin-bottom: -.40em;
-}
-headerbar box > label {
-    margin-top: -.20em;
-}
-
 
 headerbar button{
     background-color: rgba(0, 0, 0, 0);
@@ -271,24 +33,6 @@ headerbar button{
 headerbar button:hover{
     transform: scale(1.1);
     background-color: rgba(0, 0, 0, 0.164);
-}
-
-headerbar  box > box label{
-    font-size: 92%;
-    font-weight:lighter;
-    margin-top: 1.5px;
-}
-
-headerbar box > menubutton label{
-    font-size: unset;
-    font-weight: unset;
-    margin-top: unset;
-}
-
-headerbar box > button label{
-    font-size: unset;
-    font-weight: unset;
-    margin-top: unset;
 }
 
 
@@ -321,15 +65,67 @@ box > label {
     padding: 2px;
 }
 
+image{
+    filter: grayscale(1) contrast(1) brightness(1);
+}
+
+image:hover{
+    filter: unset;
+}
+
+/* Style for gtk.ScrolledWindow */
+
+scrolledwindow {
+    border-radius: 2px;
+    background-image: linear-gradient(to bottom, rgb(0, 0, 0) 0%,rgba(0, 0, 0, 0.76) 1%,rgba(56, 5, 54, 0.884) 100%);
+    border-color: transparent;
+}
+
+scrolledwindow scrollbar{
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.664) 0%,rgba(0, 0, 0, 0.726) 1%,rgba(56, 5, 54, 0.658) 100%);
+    color: rgb(153, 49, 136);
+    border-color: transparent;
+    border-radius: 6px;
+}
+
+box > scrolledwindow scrollbar{
+    transform: scale(.8 , .1);
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.671) 0%,rgba(0, 0, 0, 0.411) 1%,rgba(0, 0, 0, 0.726) 100%);
+}
+box > scrolledwindow scrollbar:hover{
+    color: #ff3888;
+    border-radius: 10px;
+    border-color: transparent;
+    transform: scale(.5, .08);
+    background-color: #1f151f;
+}
+
+
+/* Style for Window appearance */
+
+window {
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.863) 0%,rgba(32, 11, 32, 0.925) 1%,rgb(85, 9, 82) 100%);
+    color: #000000cb;
+}
+
+window stack {
+    background-image: linear-gradient(to bottom, rgba(43, 23, 54, 0.863) 0%,rgba(32, 11, 32, 0.925) 1%,rgba(0, 0, 0, 0.671) 100%);
+}
+
+window selection {
+    background-color: #690333b2;
+    color: #fafafa;
+}
+
+window selection:active {
+    background-color: #690333cc;
+    color: #fafafa;
+}
+
 /* Style for Gtk.Textview View */
 
 textview.view {
-    margin: 2px;
-    padding: 6px;
- /*   color: #0c0c0c;
-    background-color: #F8F8F8; */
     border: 2px solid rgb(0, 0, 0);
-    border-radius: 4px;
 }
 
 /* Style for gtk.Checkbutton */
@@ -373,32 +169,15 @@ box > entry:focus-within{
 
 }
 
-adw.dialog{
-    opacity: 0.98;
-    background-color: #1f151f;
-}
-
 frame{
     border-radius: 1px;
     background-color: rgb(0, 0, 0);
 }
-progressbar trough, progress {
-    min-height: .3em;
-    border-radius: 20px;
-    background-color: black;
-    background-image: linear-gradient(90deg, @theme_selected_bg_color, black);
+
+searchbar > revealer {
+    background-color: alpha(rgb(0, 0, 0), .85);
 }
 
-progressbar progress{
-    background-image: linear-gradient(90deg, black, @theme_selected_bg_color);
-    background-color: @headerbar_bg_color;
-
-}
-
-preferencesgroup * {
-    transition: all ease-in-out 300ms, opacity 400ms;
-    background-color: transparent;
-}
 preferencesgroup switch{
     background-color:rgba(101, 15, 105, 0.158);
 }
@@ -412,8 +191,4 @@ preferencesgroup switch slider:hover{
 
 preferencesgroup switch:checked{
     background-color:rgba(101, 15, 105, 0.658);
-}
-
-preferencesgroup  .expander image.expander-row-arrow {
-    transform: rotate(90deg);
 }
