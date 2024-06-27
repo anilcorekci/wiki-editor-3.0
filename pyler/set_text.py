@@ -22,7 +22,7 @@ class SetText():
     n_text = gdk.RGBA()
     n_text.parse("#3F8B79")
 
-    def __init__(self, current_buffer,  text, insert=None, color=DEFAULT_COLOR):
+    def __init__(self, current_buffer,  text, insert=None, color=DEFAULT_COLOR, font=None):
         """
         pass arguments to class
         set current self.buffer self.text
@@ -44,6 +44,9 @@ class SetText():
             foreground_rgba=fg,
             underline=4,
         )
+
+        if font:
+            self.tag.set_property("font-desc", font)
 
         self.apply()
 
