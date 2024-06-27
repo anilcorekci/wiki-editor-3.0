@@ -77,9 +77,13 @@ class Redkit:
             self.webview.set_zoom_level(self.webview.get_zoom_level() - 0.10)
         )
 
+
+        rotate = gtk.Button(child=get_stock("object-rotate-left-symbolic"))
+        rotate.connect("clicked", self.rotate_view, paned )
+
         hide_ = {1:True}
         hide = gtk.Button(child=get_stock("sidebar-hide-symbolic"))
-        hide.connect("clicked", self.hide_buttons, hide_ )
+        hide.connect("clicked", self.hide_buttons, hide_)
 
         motion_control = gtk.EventControllerMotion.new()
         motion_control.connect('motion', self.motion_in, hide_ )
@@ -99,6 +103,7 @@ class Redkit:
         box.append(self.find_entry)
         box.append(zoom)
         box.append(zoom_o)
+        box.append(rotate)
         box.append(hide)
 
         self.searchbar.set_child(box)
@@ -120,15 +125,41 @@ class Redkit:
         if hide_[1]:
             return False
 
-        max_width = self.webview.get_root().get_width()
+        max_width = self.webview.get_width()
+        max_height = self.webview.get_height()
 
-        if y > 200:
-            self.searchbar.set_visible(False)
+        match self.searchbar.get_valign():
+            case gtk.Align.END:
+                if max_height - 200 > y :
+                    self.searchbar.set_visible(False)
 
-        elif not self.searchbar.get_visible() and x > max_width - 100:
-            self.searchbar.set_visible(True)
+                elif not self.searchbar.get_visible() and x > max_width - 100:
+                    self.searchbar.set_visible(True)
+    
+            case gtk.Align.START:
+                if y > 200:
+                    self.searchbar.set_visible(False)
+
+                elif not self.searchbar.get_visible() and x > max_width - 100:
+                    self.searchbar.set_visible(True)
 
         return True
+
+
+    def rotate_view(self, buton, paned):
+        """
+        change paned  widget orientation
+        """
+        image = buton.get_child()
+        if paned.get_orientation() == gtk.Orientation.VERTICAL:
+            paned.set_orientation(gtk.Orientation.HORIZONTAL)
+            image.set_from_icon_name("object-rotate-left-symbolic")
+            self.searchbar.set_valign(gtk.Align.END)
+
+        else:
+            paned.set_orientation(gtk.Orientation.VERTICAL)
+            image.set_from_icon_name("object-rotate-right-symbolic")
+            self.searchbar.set_valign(gtk.Align.START)
 
     def hide_buttons(self,widget, hide_):
         """
