@@ -6,6 +6,7 @@ TOOL BUTTON BUILD FOR ARACLAR
 
 from gi.repository import Gtk as gtk
 from gi.repository import Gio
+from gi.repository import Pango as pango
 
 from kategori import CategoryWindow
 from araclar import mesaj
@@ -284,3 +285,43 @@ class ToolItem():
         """call category window from kategori"""
         window = CategoryWindow(self.app, self.wikieditor.set_text)
         self.wikieditor.add_custom_styling(window)
+
+    def font_select(self, *_):
+
+        if self.wikieditor.get_konu():
+            dialog = gtk.FontDialog()
+            dialog.set_modal(True)
+            font = pango.FontDescription.new()
+            can = Gio.Cancellable.new()
+        else:
+            return False
+
+        def finish( _, task): #font_dialog#task
+            """
+            get_font value on finith
+            """
+            styles = ["normal","oblique", "italic"]
+
+            if  task.had_error():
+                return False
+
+            font_desc = dialog.choose_font_finish(task)
+
+            family = font_desc.get_family()
+            size_ = str( font_desc.get_size() ) [0:2]
+            style = styles[ int( font_desc.get_style() ) ]
+            weight = int( font_desc.get_weight() )
+
+            if konu:=self.wikieditor.get_konu():
+
+                self.wikieditor.set_text(
+                    [f'<span style="font-family:{family};'
+                    f"font-size:{size_}px;"
+                    f"font-style:{style};"
+                    f'font-weight:{weight}">',
+                    f"{konu}",  "</span>"],
+                    font=font_desc)
+
+            return True
+
+        dialog.choose_font(self.app.win, font, can, finish)
