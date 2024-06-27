@@ -61,6 +61,8 @@ descriptions = {
 
 "Color select with custom span": "color_select",
 
+"Font select with custom span": "font_select",
+
 "To write in red":["{{red|" ,"}}"],
 
 "To write in blue" : ["{{blue|" ,"}}"] ,
