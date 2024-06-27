@@ -18,12 +18,42 @@ notebook tabs {
     background-color: #000000;
     color: #fafafa;
 }
+notebook arrow{
+    border-radius: 2px;
+    margin: 0px 8px 0px 8px;
+    opacity: .2;
+    margin-top: 9px;
+    margin-bottom: 9px;
+    box-shadow: inset -3px -3px 0px 0px;
+    padding: .01px;
+    border-width: 0 0px 0px 0;
+    background-color: rgba(240, 248, 255, 0);
+}
 
+notebook arrow.up {
+    transform: rotate(-45deg);
+    margin-left: -9px;
+}
+
+notebook arrow.down {
+    transform: rotate(135deg);
+    margin-right: -9px;
+}
+
+notebook arrow:hover{
+    animation: slide_1 .5s linear infinite;
+}
+
+notebook arrow:active{
+    background-color: rgba(170, 170, 170, 0.164);
+    border-radius: 80%;
+}
 /* Style for gtk.HeaderBar */
 
 headerbar {
-    background-color:rgba(0, 0, 0, 0.678) ;
+    background-color:black ;
     opacity: .9;
+    box-shadow: unset;
 }
 
 headerbar button{
@@ -34,17 +64,17 @@ headerbar button:hover{
     transform: scale(1.1);
     background-color: rgba(0, 0, 0, 0.164);
 }
-
 headerbar .modified {
     margin-top: 1.3em;
     margin-bottom: 1.3em;
 }
 
+
 /* Style for Gtk.Box */
 box {
    /* border: 1px solid #008cff; */
     border-radius: 12px;
-    background-color: #03164100;
+    background-color: #00000000;
     color: #ffffff; 
 /*    opacity: 0.9;*/
     padding: .1em;
@@ -170,7 +200,6 @@ box > entry:focus-within{
     background-color: #5e0e5a88;
     color: #fafafa;
     border: 2px solid rgb(223, 30, 149);
-
 }
 
 frame{
