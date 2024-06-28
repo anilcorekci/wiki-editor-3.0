@@ -1,5 +1,3 @@
-/* Style for Gtk.Notebook */
-
 @import url('./default.css');
 
 /* Style for Gtk.label in Gtk.Box */
@@ -8,6 +6,8 @@ box > label {
     margin: 1px;
     padding: 2px;
 }
+
+/* Style for Gtk.Notebook */
 
 notebook {
   /*  border: 1px solid #01bd94; */
@@ -19,35 +19,27 @@ notebook tabs {
     color: #fafafa;
 }
 notebook arrow{
-    border-radius: 2px;
-    margin: 0px 8px 0px 8px;
-    opacity: .2;
-    margin-top: 9px;
-    margin-bottom: 9px;
-    box-shadow: inset -3px -3px 0px 0px;
+
     padding: .01px;
     border-width: 0 0px 0px 0;
     background-color: rgba(240, 248, 255, 0);
-}
-
-notebook arrow.up {
-    transform: rotate(-45deg);
-    margin-left: -9px;
-}
-
-notebook arrow.down {
-    transform: rotate(135deg);
-    margin-right: -9px;
-}
-
-notebook arrow:hover{
-    animation: slide_1 .5s linear infinite;
 }
 
 notebook arrow:active{
     background-color: rgba(170, 170, 170, 0.164);
     border-radius: 80%;
 }
+
+popover arrow {
+    margin: unset;
+    background-color: unset;
+    box-shadow: unset;
+}
+
+popover arrow:hover{
+    animation: unset;
+}
+
 /* Style for gtk.HeaderBar */
 
 headerbar {
@@ -68,7 +60,6 @@ headerbar .modified {
     margin-top: 1.3em;
     margin-bottom: 1.3em;
 }
-
 
 /* Style for Gtk.Box */
 box {
