@@ -428,7 +428,10 @@ class WikiEditor(gtk.ApplicationWindow):
         """
         return current buffer
         """
-        return self.current_editor.get_buffer()
+        try:
+            return self.current_editor.get_buffer()
+        except AttributeError:
+            return False
 
     def set_text(self, *args, **kwargs):
         """
