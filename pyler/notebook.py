@@ -15,9 +15,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('GtkSource', '5')
 
 
-from gi.repository import Gdk, GObject
-
-
+from gi.repository import GObject
 from gi.repository import Gtk as gtk
 from gi.repository import GtkSource as edit
 from gi.repository import GLib
@@ -39,11 +37,6 @@ DEFAULT = "../templates/default.css"
 MAIN = "../templates/main.css"
 WAIT = gdk.Cursor.new_from_name("wait")
 DEFAULT_TEXT = gdk.Cursor.new_from_name("text")
-
-#TODOD.. HAVE A LOOK AT DND DRAG AND DROP EXAMPLE
-#NOT NEEDED LOOK FOR MULTIPLE FILE OPEN OPTION
-#DONE CREATE SETTINGS WINDOW TO MODIFY TOOLBAR AND SHORTCUTS
-#TODOD CREATE ANOTHER TEMPLATES DIRECTORY FOR OTHER WIKI PAGES..
 
 class WikiEditor(gtk.ApplicationWindow):
     """
@@ -78,32 +71,15 @@ class WikiEditor(gtk.ApplicationWindow):
         self.connect("state-flags-changed", self.responsive_margin )
      #   self.set_title(" Wiki Editor 3" )
 
-
         display = self.get_display()
-        itheme = gtk.IconTheme.get_for_display (display)
-        itheme.add_search_path( os.environ['PWD'] )
+        self.itheme = gtk.IconTheme.get_for_display (display)
+        self.itheme.add_search_path( os.environ['PWD'] )
 
         self.set_default_icon_name("wiki-editor")
         self.set_icon_name("wiki-editor")
         self.set_title(" Wiki Editor 3" )
 
-        self.headerbar = gtk.HeaderBar()
-        self.headerbar.set_size_request(-1, 22) #!
-        self.headerbar.set_show_title_buttons(False)
-        self.headerbar.set_decoration_layout("menu:minimize,close")
-
-        header_event = gtk.EventControllerMotion.new()
-        self.headerbar.add_controller(header_event)
-
-        header_event.connect("enter", lambda _,x,__:
-            GLib.idle_add(self.headerbar.set_show_title_buttons,True)
-            if x >= self.get_width() - 24
-            else GLib.idle_add(self.headerbar.set_show_title_buttons,False)
-        )
-        header_event.connect("leave", lambda *_: 
-            GLib.idle_add(self.headerbar.set_show_title_buttons,False)
-        )
-
+        self.headerbar = self.make_headerbar()
         self.set_titlebar(self.headerbar)
 
         self.notebook = gtk.Notebook()
@@ -129,21 +105,7 @@ class WikiEditor(gtk.ApplicationWindow):
 
         self.operations = FileOperation(self)
 
-        self.center_box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-        self.center_box.set_halign(gtk.Align.FILL)
-        self.center_box.set_margin_start(12)
-        self.center_box.set_margin_end(2)
-
-        self.headerbar.pack_end(self.center_box)
-
-        self.title = gtk.Label(  label=" Wiki Editor  ",
-            width_chars=6,justify=2,
-            use_markup=True, ellipsize=3
-        )
-        box = gtk.Box()
-        box.append(self.title)
-        self.headerbar.set_title_widget(box)
-        self.title.get_layout().set_spacing(2.7*1024)
+        self.center_box, self.title = self.make_title()
 
         table = gtk.Box(orientation=gtk.Orientation.VERTICAL)
 
@@ -167,11 +129,10 @@ class WikiEditor(gtk.ApplicationWindow):
         self.add_custom_styling(self)
         self.add_custom_styling(self.progress)
 
-
         drop_controller = gtk.DropTarget.new(
-            type=GObject.TYPE_NONE, actions=Gdk.DragAction.COPY
+            type=GObject.TYPE_NONE, actions=gdk.DragAction.COPY
         )
-        drop_controller.set_gtypes([Gdk.FileList, str])
+        drop_controller.set_gtypes([gdk.FileList, str])
         drop_controller.connect('drop', self.on_drop)
         self.add_controller(drop_controller)
 
@@ -180,7 +141,7 @@ class WikiEditor(gtk.ApplicationWindow):
         open files on drop recieved
         ...
         """
-        if not isinstance(value, Gdk.FileList):
+        if not isinstance(value, gdk.FileList):
             return False
 
         files = self.operations.get_file_list()
@@ -191,6 +152,60 @@ class WikiEditor(gtk.ApplicationWindow):
             if file not in files.values():
                 self.operations.yeni(file)
                 self.operations.open(file)
+
+        return True
+
+    def make_headerbar(self):
+        """
+        define and return custom headerbar
+        """
+        headerbar = gtk.HeaderBar()
+        headerbar.set_size_request(-1, 22) #!
+        headerbar.set_show_title_buttons(False)
+        headerbar.set_decoration_layout("menu:minimize,close")
+
+        header_event = gtk.EventControllerMotion.new()
+        headerbar.add_controller(header_event)
+
+        def enter_event(_,x,__):
+            """
+            auto-hide title buttons
+            """
+            if x >= self.get_width() - 24:
+                GLib.idle_add(headerbar.set_show_title_buttons,True)
+
+            elif headerbar.get_show_title_buttons():
+                GLib.idle_add(headerbar.set_show_title_buttons,False)
+
+        header_event.connect("enter", enter_event)
+        header_event.connect("leave", lambda *_:
+            GLib.idle_add(headerbar.set_show_title_buttons,False)
+        )
+
+        return headerbar
+
+    def make_title(self):
+        """
+        define and return custom center_box
+        """
+        center_box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
+        center_box.set_halign(gtk.Align.FILL)
+        center_box.set_margin_start(12)
+        center_box.set_margin_end(2)
+
+        self.headerbar.pack_end(center_box)
+
+        title = gtk.Label(  label=" Wiki Editor  ",
+            width_chars=6,justify=2,
+            use_markup=True, ellipsize=3
+        )
+
+        box = gtk.Box()
+        box.append(title)
+        self.headerbar.set_title_widget(box)
+        title.get_layout().set_spacing(2.7*1024)
+
+        return center_box, title
 
     def notebook_scroll(self, _, position, *__):
         """
@@ -222,7 +237,7 @@ class WikiEditor(gtk.ApplicationWindow):
         except AttributeError:
             lang_name = "text/plain"
             self.hamburgers[1].set_label(lang_name)
-        
+
         if name:
             return lang_name
 
@@ -477,11 +492,11 @@ class WikiEditor(gtk.ApplicationWindow):
             i += 1
             self.notebook.set_current_page(i)
 
-            if  self.notebook.get_n_pages() < i:
+            if self.notebook.get_n_pages() < i:
                 self.destroy()
                 return False
 
-            elif self.current_editor:
+            if self.current_editor:
                 if self.current_buffer.get_modified():
                     soru = mesaj_button(
                     heading="<b>Unsaved changes found </b>",
@@ -496,15 +511,15 @@ class WikiEditor(gtk.ApplicationWindow):
                         response_id = int( widget.choose_finish(response_id) )
                         if response_id == 0:
                             self.destroy()
-                            return False
-                        self.set_sensitive(True)
+                        else:
+                            self.set_sensitive(True)
 
                     self.set_sensitive(False)
                     soru.choose(self, None, response)
              #       self.add_custom_styling(soru)
                     break
 
-            else: 
+            else:
                 self.destroy()
                 return False
 

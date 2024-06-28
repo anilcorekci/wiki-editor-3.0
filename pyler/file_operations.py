@@ -21,7 +21,6 @@ from araclar import (hata, mesaj,
 
 UNDEFINED = "New Document"
 
-
 class FileOperation():
     """
     File Operations for wiki editor gui
@@ -34,8 +33,8 @@ class FileOperation():
         self.gl_b = wiki_editor.gl_b
         self.notebook = wiki_editor.notebook
         self.ileti = wiki_editor.ileti
-        self.add_custom_styling = wiki_editor.add_custom_styling
         self.set_text = wiki_editor.set_text
+        self.all_icons = self.wikieditor.itheme.get_icon_names()
 
     def note_label_box(self, label_text, yol):
         """
@@ -53,30 +52,18 @@ class FileOperation():
 
         match lang_name:
             case lang_name if "text/" in lang_name:
-                stock = get_stock(f"text-{lang_name.split("/")[-1]}")
-    
-            case lang_name if  "shell" in lang_name:
-                stock = get_stock(f"application-x-{lang_name}")
-
-            case lang_name if "xml" in lang_name:
-                stock = get_stock(f"application-xml")
+                stock = self.check_text_x("text", lang_name)
 
             case lang_name if "application/" in lang_name:
-                stock = get_stock(f"application-x-{lang_name.split("/")[-1]}")
-
-            case lang_name if "markdown" in lang_name:
-                stock = get_stock(f"text-{lang_name}")
-
-            case lang_name if "info" in lang_name:
-                stock = get_stock(f"gnome-mime-application-x-gnome-app-info")
+                stock = self.check_text_x("application",lang_name)
 
             case _:
-                stock = get_stock(f"text-x-{lang_name}")
+                stock = self.check_text_x(lang_name, lang_name, True)
 
         stock.set_margin_end(12)
         stock.set_tooltip_text(stock.get_icon_name() )
         box1.set_start_widget(stock)
-        
+
         label = gtk.Label(label=label_text, xalign=0.5)
         label.set_ellipsize(3)
         label.set_halign(gtk.Align.CENTER)
@@ -100,6 +87,33 @@ class FileOperation():
         box1.set_end_widget(image1)
 
         return box1
+
+    def check_text_x(self, text, lang_name, unknown=False):
+        """
+        check mimetype if exist in icontheme
+        and return stock image
+        """
+        if unknown:
+            stock = self.check_text_x("application", lang_name)
+            if "preview" in stock.get_icon_name():
+                stock = self.check_text_x("text", lang_name)
+
+            if "preview" in stock.get_icon_name():
+                if lang_name in self.all_icons:
+                    return get_stock(f"{lang_name}")
+
+            return stock
+
+        icon_name = f"{text}-{lang_name.split("/")[-1]}"
+        if icon_name in self.all_icons:
+            return get_stock(icon_name)
+
+        icon_name = f"{text}-x-{lang_name.split("/")[-1]}"
+
+        if icon_name in self.all_icons:
+            return get_stock(icon_name)
+
+        return get_stock("text-x-preview")
 
     def get_file_path(self, label=None ,tab=None):
         """
@@ -164,8 +178,8 @@ class FileOperation():
             self.gl_b["overlay"].set_margin_top(46)
 
         #self.gl_b.update( {"grid": False} )
-        self.add_custom_styling(wiki_text)
-        self.add_custom_styling(self.notebook)
+        self.wikieditor.add_custom_styling(wiki_text)
+        self.wikieditor.add_custom_styling(self.notebook)
 
         self.wikieditor.current_buffer.emit("cursor-moved")
 
@@ -330,7 +344,7 @@ class FileOperation():
         file_path = "".join(label.split(":")[1:3])
         file_path =  re.sub(r"^\s+", "", file_path)
 #        print(file_path)
-        
+
         if not os.path.isfile(file_path) or save_as:
 
             dialog = get_filechooser(self,

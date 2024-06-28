@@ -30,32 +30,48 @@ class MakeHamburger(gtk.MenuButton):
         if label:
             self.set_label(label)
 
-    def add_to_menu(self, name, funk, shortcut=None, sub=None, check=None):
+    def add_to_menu(self, *args, **kwargs): #name, funk, shortcut, ):
         """
         add to menu
         """
-        name = name.replace(" ","__")
-        if not check:
-            action = Gio.SimpleAction.new(name, None)
-        else:
-            action = Gio.SimpleAction.new_stateful(name, None, GLib.Variant.new_boolean(False))
+        default = { 'sub': None, 'check': None }
+        kwargs = { **default, **kwargs }
+
+        for i, item in enumerate(args):
+            match i:
+                case 0:
+                    name = item.replace(" ","__")
+                case 1:
+                    funk = item
+                case 2 if item:
+                    #add shortcut
+                    self.window.app.set_accels_for_action( f"win.{name}", [item] )
+                case i if i >= 3:
+                    key = list(default.keys())[i-3]
+                    kwargs[key] = item
+
+        for item, val in kwargs.items():
+            match item:
+                case "sub" if val:
+                    val.append(name.replace("__"," "), f"win.{name}")
+
+                case "sub" if not val:
+                    self.menu.append(name.replace("__"," "), f"win.{name}")
+
+                case "check" if val:
+                    action = Gio.SimpleAction.\
+                        new_stateful(name, None, GLib.Variant.new_boolean(False))
+
+                case "check" if not val:
+                    action = Gio.SimpleAction.new(name, None)
 
         action.connect("activate", funk)
-
-        if sub:
-            sub.append(name.replace("__"," "), f"win.{name}")
-        else:
-            self.menu.append(name.replace("__"," "), f"win.{name}")
-
         self.window.add_action(action)
 
-        if shortcut:
-       #     print("something!")
-            self.window.app.set_accels_for_action( f"win.{name}", [shortcut] );
-
-
     def to_sub_menu(self, menu_name ):
-     #   'append', 'append_item', 'append_section', 'append_submenu
+        """
+        'append', 'append_item', 'append_section', 'append_submenu
+        """
         if isinstance(menu_name, Gio.Menu):
             self.ex_menu = self.menu
             self.menu = menu_name
@@ -63,7 +79,7 @@ class MakeHamburger(gtk.MenuButton):
 
         if self.ex_menu:
             self.n_time += 1
-        
+
         if self.ex_menu and self.n_time == 2:
             self.menu = self.ex_menu
             self.ex_menu = None
@@ -91,12 +107,7 @@ class ToolBar(gtk.Box):
         self.sw.set_child(gtk.Frame(child=self) )
         self.sw.set_propagate_natural_width(True) ##!
         self.sw.set_propagate_natural_height(True) ##!
-      #  self.sw.get_hscrollbar().set_visible(False)
         self.sw.set_policy( gtk.PolicyType.EXTERNAL, True )
-
-        #adj = self.sw.get_hscrollbar().get_adjustment()
-        #adj.connect("changed", self.make_popover)
-        #adj.connect("value-changed", lambda *_: adj.set_value(0))
 
         self.set_margin_start(12)
         self.set_margin_end(12)
@@ -105,7 +116,6 @@ class ToolBar(gtk.Box):
 
         self.sw.add_css_class( "wiki-scroll" )
 
-
     @property
     def scroll(self):
         """
@@ -113,57 +123,10 @@ class ToolBar(gtk.Box):
         """
         return self.sw
 
-#    def make_popover(self, adj):
-#        """
-#        # print(adj.get_page_size()) # the size of  visible hscroll
-#        #print(adj.get_upper() ) # the max value
-#        """
-#        visible = adj.get_page_size()
-#        max = adj.get_upper()
-#        step = adj.get_step_increment()
-#
-#        if visible < max:
-#            list_widget = {}
-#            i = -1
-#
-#            for each in self:
-#                #widget x position 
-#                each_x = each.compute_bounds(self)[1].get_x()
-#                match self.appearance:
-#                    case "IMAGE":
-#                        if each_x >= visible - step - 64:
-#                            i += 1
-#                            list_widget[i] = each
-#                            each.set_sensitive(False)
-#                            continue
-#                    case _:
-#                        if each_x >= visible - step - 256:
-#                            i += 1
-#                            list_widget[i] = each
-#                            each.set_sensitive(False)
-#                            continue
-#                each.set_sensitive(True)
-#
-#            if self.get_root().hamburgers[2] not in self:
-#                self.append(self.get_root().hamburgers[2])
-#            
-#            list_widget[0].set_sensitive(True)
-#            self.reorder_child_after(self.get_root().hamburgers[2], list_widget[0])
-#            self.get_root().hamburgers[2].set_sensitive(True)
-#            return False
-
-        if self.get_root().hamburgers[2] in self:
-            self.remove(self.get_root().hamburgers[2])
-
-        for each in self:
-            each.set_sensitive(True)
-
-        return True
-
     def get_position(self):
         """
         returns current orientation
-        """        
+        """
         return self.position
 
     def set_position(self, position):
@@ -235,5 +198,5 @@ class ToolBar(gtk.Box):
                 case "IMAGE":
                     image.set_visible(True)
                     label.set_visible(False)
-        
+
         self.appearance = type_

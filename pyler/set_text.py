@@ -22,15 +22,26 @@ class SetText():
     n_text = gdk.RGBA()
     n_text.parse("#3F8B79")
 
-    def __init__(self, current_buffer,  text, insert=None, color=DEFAULT_COLOR, font=None):
+    def __init__(self, *args, **kwargs):
         """
         pass arguments to class
         set current self.buffer self.text
         """
-        self.buffer = current_buffer
-        self.text = text
-        self.insert = insert
-        self.color = color
+
+        default = { "insert":None, "color":DEFAULT_COLOR, "font":None}
+        kwargs = {**default, **kwargs}
+
+        for i, each in enumerate(args):
+            match i:
+                case 0:
+                    self.buffer = each
+                case 1:
+                    self.text = each
+                case i if i >= 2:
+                    key = list(default.keys())[i-2]
+                    kwargs[key] = each
+
+        self.insert, self.color, font = kwargs.values()
 
         fg = gdk.RGBA()
         fg.parse(self.color)
@@ -45,9 +56,7 @@ class SetText():
             underline=4,
         )
 
-        if font:
-            self.tag.set_property("font-desc", font)
-
+        self.tag.set_property("font-desc", font)
         self.apply()
 
     def set_instances(self):
@@ -56,14 +65,14 @@ class SetText():
         in pango markup
         """
         start_tag, end_tag = self.text[0], self.text[2]
-        
+
         match end_tag:
             case "'''":
                 self.tag.set_property("weight", pango.Weight.BOLD)
 
             case "''":
                 self.tag.set_property("style", pango.Style.ITALIC)
-            
+
             case "</big>":
                 self.tag.set_property("scale", 1.4)
                 self.tag.set_property("underline-set", False)
@@ -106,11 +115,11 @@ class SetText():
             case "==":
                 self.tag.set_property("underline-set", False)
                 self.fg.parse(self.color)
-                self.tag.set_property("scale", 1.1)
+                self.tag.set_property("scale", 1.8)
 
                 if "==" in self.text[1]:
-                    self.tag.set_property("scale", 
-                        1.1 + len(self.text[1].split("==")) / 10
+                    self.tag.set_property("scale",
+                        1.8 - len(self.text[1].split("==")) / 10
                     )
 
     def apply(self):
@@ -128,7 +137,7 @@ class SetText():
         self.buffer.delete(start, end)
         iter_ = self.buffer.get_iter_at_mark(self.buffer.get_insert())
 
-        if isinstance(self.text, list):        
+        if isinstance(self.text, list):
             self.set_instances()
             self.buffer.insert_at_cursor("".join(self.text))
 
@@ -144,8 +153,8 @@ class SetText():
         iter_ = self.buffer.get_iter_at_mark(self.buffer.get_insert())
 
         start, end = iter_.backward_search( self.text,
-            gtk.TextSearchFlags.TEXT_ONLY, 
-            None 
+            gtk.TextSearchFlags.TEXT_ONLY,
+            None
         )
 
         self.tag.set_property("underline", False)

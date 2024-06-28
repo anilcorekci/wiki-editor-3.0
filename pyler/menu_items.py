@@ -55,7 +55,7 @@ class MenuItems():
             "<primary>N" ),
 
             ("Open",
-            lambda *_: self.operations.open_file(_),
+            lambda *x: self.operations.open_file(x),
             "<primary>O"
             ),
 
@@ -97,47 +97,34 @@ class MenuItems():
             ( "Only text",
              lambda *_: self.set_toolbar(*_, type_="TEXT"),
              "<alt>2", True),
-            ( "Both text and icon",
-             lambda *_: self.set_toolbar(*_),
+            ( "Both text and icon", self.set_toolbar,
              "<alt>3", True ),
             ("Show/Hide ToolBar", self.show_hide_toolbar, "F3", True),
         ],
 
         "Toolbar Position": [
-            ( "Left", 
+            ( "Left",
              self.position_tool, "<primary>3", True),
-            ( "Right", 
+            ( "Right",
              self.position_tool, "<primary>4", True),
-            ( "Top", 
+            ( "Top",
              self.position_tool, "<primary>1", True),
-            ( "Bottom", 
+            ( "Bottom",
              self.position_tool, "<primary>2", True),
         ],
 
         "more_wiki": [
-
-            ( "Bullets", self.set_tool_edit, "<alt>M" ),
-            ( "Del Bullets", self.set_tool_edit, "<alt><shift>M" ),
-            ( "Numbered", self.set_tool_edit, "<alt>N" ),
-            ( "Del Numbered", self.set_tool_edit, "<alt><shift>N" ),
-            ( "Breaks", self.set_tool_edit, "<primary>E" ),
-            ( "Del Breaks",self.set_tool_edit, "<primary><shift>E"),
-            ( "All Nowiki", self.set_tool_edit, "<primary>W" ),
-            ( "Del Nowiki", self.set_tool_edit, "<primary><shift>W" ),
-            ( "Show/Hide Preview", lambda widget, *_:
-             [self.wiki_editor.preview.set_visible(True),
-              widget.set_state(GLIB_TRUE) ]
-             if widget.get_state() == GLIB_FALSE else
-              [self.wiki_editor.preview.set_visible(False),
-                widget.set_state(GLIB_FALSE),
-                self.wiki_editor.redkit.try_close() ], 
-            "<super>E", True),
-
+            ( "Show/Hide Preview", self.show_preview,  "<super>E", True),
             ( "Full Screen", self.set_fullscreen, "F11", True ),
             #if there are 4 item last item for check option
             ("Wiki Editor Css", self.set_css,  "F1", True),
-            ]
+        ]
         }
+
+        for key, val in MENUSETUP["ARACLAR"].items():
+            each = ( key, self.set_tool_edit, val[1] )
+            index_ = list(MENUSETUP["ARACLAR"]).index(key)
+            self.menu_items["more_wiki"].insert( index_, each)
 
         self.hamburgers = [
             MakeHamburger( self.wiki_editor, icon="applications-other"),
@@ -183,7 +170,7 @@ class MenuItems():
         """
         action, state, group, func = args
 
-        if state == None:
+        if state is None:
         #   print("this call from ui")
             self.update_db(action)
             for name in group:
@@ -192,15 +179,14 @@ class MenuItems():
                     name.set_state(GLIB_TRUE)
                     self.update_db(name)
             return False
-    
-        else:
-            if state == GLIB_TRUE:
-        #    print("this call from tercihler.py")
-                action.set_state(GLIB_TRUE)
-                func()
-                action.set_enabled(False)
 
-            return True
+        if state == GLIB_TRUE:
+    #    print("this call from tercihler.py")
+            action.set_state(GLIB_TRUE)
+            func()
+            action.set_enabled(False)
+
+        return True
 
     def position_tool(self, action, state):
         """
@@ -230,6 +216,10 @@ class MenuItems():
         return True
 
     def set_toolbar(self, action, state, type_="BOTH"):
+        """
+        set toolbar position
+        and update db
+        """
         actions = ["Both text and icon", "Only text", "Only icon"]
         actions = [ each.replace(" ","__") for each in actions]
 
@@ -249,6 +239,8 @@ class MenuItems():
             name_ = self.wiki_editor.lookup_action(name)
             name_.set_state(GLIB_FALSE)
             name_.set_enabled(True)
+
+        return True
 
     def set_for_all(self, func):
         """
@@ -279,7 +271,7 @@ class MenuItems():
 
         ConfigWindow( self.wiki_editor).update_setting(
             action.get_name(), state, state )
-        
+
     #    action.emit("activate", action.get_state() )
 
     def append_to_menu(self, menu_items, sub=None):
@@ -298,7 +290,7 @@ class MenuItems():
                 self.hamburgers[0].add_to_menu(*items[0:3], check=True, sub=sub)
                 continue
             self.hamburgers[0].add_to_menu(*items, sub=sub)
-        
+
         return sub
 
     def append_languages(self):
@@ -319,7 +311,9 @@ class MenuItems():
             self.hamburgers[1].add_to_menu(language, select_language)
 
     def append_morewiki(self):
-
+        """
+        append additional menu_button
+        """
         new_but = MakeHamburger( self.wiki_editor, icon="open-menu-symbolic")
         for items in  self.menu_items["more_wiki"]:
             if True in items:
@@ -332,6 +326,20 @@ class MenuItems():
         new_but.set_tooltip_text("More Wiki")
      #   new_but.set_tooltip_icon_name("wiki-editor")
         self.hamburgers.append(new_but)
+
+    def show_preview(self, widget, *_):
+        """
+        show/hide webkit preview
+        """
+        if widget.get_state() == GLIB_FALSE:
+            self.wiki_editor.preview.set_visible(True)
+            widget.set_state(GLIB_TRUE)
+            return True
+
+        self.wiki_editor.preview.set_visible(False)
+        widget.set_state(GLIB_FALSE)
+        self.wiki_editor.redkit.try_close()
+        return False
 
     def show_grid(self, action, *_):
         """
@@ -350,7 +358,7 @@ class MenuItems():
                 set_background_pattern(edit.BackgroundPatternType.NONE)
             )
             action.set_state(GLIB_FALSE)
-        
+
         self.update_db(action)
 
     def append_themes(self):
@@ -430,7 +438,7 @@ class MenuItems():
 
         self.update_db(action)
 
-    def set_fullscreen(self, widget, flag=None):
+    def set_fullscreen(self, widget, *_):
         """
         Set fullscreen to unfullscreen
         ...
@@ -447,10 +455,9 @@ class MenuItems():
         """
         activate menu item actions on click 
         """
-        name = widget.get_name().replace("__"," ")
-
 #####  set up text using sed regex
-        komut = MENUSETUP["ARACLAR"][name]
+        name = widget.get_name().replace("__"," ")
+        komut = MENUSETUP["ARACLAR"][name][0]
 
         if konu:= self.wiki_editor.get_konu():
 
@@ -463,4 +470,3 @@ class MenuItems():
                 self.wiki_editor.set_text(dosya.read(), color="#e92a63")
 
             os.system(f"rm -rf {TMP_FILE}" )
-        return True

@@ -18,7 +18,6 @@ class SearchBar:
     ..
     """
     renk = {} #buffer: tag
-    tbuffer = None
     total = -1
     case_senstivie = None
     replace = None
@@ -37,6 +36,51 @@ class SearchBar:
             overlay.remove_overlay(app.gl_b["overlay"])
             app.gl_b["overlay"].unrealize()
 
+        hbox2, searchbar =  self.make_below(app)
+        hbox = self.make_above(hbox2, app, replace)
+
+        if not replace:
+            hbox2.set_visible(False)
+
+        box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
+        box.append(hbox)
+        box.append(hbox2)
+
+
+        buffer = app.current_buffer
+        if bounds:=buffer.get_selection_bounds():
+            start, end = bounds
+            konu = buffer.get_slice(start, end, None)
+            self.search_text.set_text(konu)
+            self.search_text.select_region(0, len(konu))
+
+        searchbar.set_child(box)
+        searchbar.connect_entry(self.search_text)
+
+        overlay = app.notebook.get_parent()
+        overlay.add_overlay(searchbar)
+        self.search_text.grab_focus() #..
+
+        if app.notebook.get_n_pages() > 1:
+            searchbar.set_margin_top(46)
+
+        app.add_custom_styling(searchbar)
+
+        searchbar.set_show_close_button(True)
+        self.search_text.connect("unmap", lambda *_: searchbar.hide() )
+
+    def make_above(self, hbox2, app, replace):
+        """
+        create first box in searchbar
+        and returns
+        """
+        search_text  =  gtk.SearchEntry()
+        self.search_text = search_text
+        self.search_text.set_placeholder_text("Write here")
+        self.search_text.set_size_request(170 ,30)
+        self.search_text.connect("activate", lambda *_: self.ara(app=app))
+        self.search_text.connect("search-changed",  lambda *_: self.ara(app=app))
+
         image_up = self.make_button("go-up",
             lambda *_: self.search_up(app=app)
         )
@@ -47,18 +91,17 @@ class SearchBar:
         image_down = self.make_button("go-down",
             lambda *_: self.search_down(app=app)
         )
-        image_up.props.margin_end = 7
-
-        self.search_text  =  gtk.SearchEntry()
-        self.search_text.set_placeholder_text("Write here")
-        self.search_text.set_size_request(170 ,30)
-        self.search_text.connect("activate", lambda *_: self.ara(app=app))
-        self.search_text.connect("search-changed",  lambda *_: self.ara(app=app))
+        image_down.props.margin_end = 2
 
         hbox = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
 
         hbox.props.margin_top = 14
         hbox.props.margin_bottom = 14
+
+        case_senstivie =  gtk.CheckButton(child=get_stock("tools-check-spelling-symbolic"))
+        self.case_senstivie = case_senstivie
+        self.case_senstivie.set_margin_start(42)
+        self.case_senstivie.set_margin_end(32)
 
         regex = gtk.Button(child=get_stock("edit-find-replace-symbolic"))
         regex.connect("clicked", lambda _, regex_val={1: replace}:[
@@ -68,22 +111,21 @@ class SearchBar:
 
         regex.set_margin_end(6)
 
-        self.case_senstivie =  gtk.CheckButton(child=get_stock("tools-check-spelling-symbolic"))
-        self.case_senstivie.set_margin_start(42)
-        self.case_senstivie.set_margin_end(32)
+        for widget in vars().values():
+            if isinstance(widget, (gtk.Box, gtk.Window)):
+                continue
 
-        hbox.append(image_up)
-        hbox.append(image_down)
-        hbox.prepend(self.search_text)
+            if isinstance(widget, gtk.Widget):
+                hbox.append(widget)
 
-        hbox.append(self.case_senstivie)
-        hbox.append(regex)
+        return hbox
 
-        hbox2 =  gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
-
-        if not replace:
-            hbox2.set_visible(False)
-
+    def make_below(self, app):
+        """
+        create second box in searchbar
+        and returns        
+        """
+        hbox2 = gtk.Box(orientation=gtk.Orientation.HORIZONTAL)
         hbox2.props.margin_top = 5
         hbox2.props.margin_bottom = 14
         hbox2.props.spacing = 18
@@ -103,17 +145,6 @@ class SearchBar:
         hbox2.append(replace_but)
         hbox2.append(replace_all)
 
-        box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
-        box.append(hbox)
-        box.append(hbox2)
-
-        buffer = app.current_buffer
-        if bounds:=buffer.get_selection_bounds():
-            start, end = bounds
-            konu = buffer.get_slice(start, end, None)
-            self.search_text.set_text(konu)
-            self.search_text.select_region(0, len(konu))
-
         searchbar = gtk.SearchBar()
         searchbar.set_search_mode(True)
         app.gl_b["overlay"] = searchbar
@@ -121,20 +152,7 @@ class SearchBar:
         searchbar.set_valign(gtk.Align.START)
         searchbar.set_halign(gtk.Align.END)
 
-        searchbar.set_child(box)
-        searchbar.connect_entry(self.search_text)
-
-        overlay = app.notebook.get_parent()
-        overlay.add_overlay(searchbar)
-        self.search_text.grab_focus() #..
-
-        if app.notebook.get_n_pages() > 1:
-            searchbar.set_margin_top(46)
-
-        app.add_custom_styling(searchbar)
-
-        searchbar.set_show_close_button(True)
-        self.search_text.connect("unmap", lambda *_: searchbar.hide() )
+        return hbox2, searchbar
 
     def make_button(self, stock, function):
         """
@@ -167,7 +185,7 @@ class SearchBar:
 
         if buffer in self.renk:
             buffer.remove_tag(self.renk[buffer], start, end)
-        #    del self.renk[buffer]
+       #     del self.renk[buffer]
 
         self.renk[buffer] = buffer.create_tag(background="yellow",foreground="#000000")
 

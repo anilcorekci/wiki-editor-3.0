@@ -184,7 +184,7 @@ CATEG= {
     "Sanallaştırma", "Ses ve Video Yazılımları",
     "Sistem Uygulamaları", "Sunucu Uygulamaları"],
 #
-"ubuntu": ["Ubuntu", "Ubuntu Sürümleri", "Paylaşım",
+"Ubuntu": ["Ubuntu", "Ubuntu Sürümleri", "Paylaşım",
            "Tayfa", "Tayfa Toplantıları",
            "Ubuntu Hakkında", "Ubuntu Türevleri",
            "SUDO Alıntıları", "Ekran Görüntüleri"],
@@ -238,13 +238,17 @@ NOU = f"""sed -i -e 's_#__g' {TMP_FILE}"""
 # IN MENUSETUP DICTONARY
 MENUSETUP = {
 # SED COMMANDS
+# this can have multiple key if needed
+# key > dict > list(os command, shortcut)
     "ARACLAR":{
-    "Numbered":NU,
-    "Del Numbered": NOU,
-    "All Nowiki": NO,
-    "Del Nowiki": RNO,
-    "Bullets": MADDE, "Del Bullets": RMADDE,
-    "Breaks": BOSLUK, "Del Breaks": RBOSLUK,
+    "Numbered": [ NU, "<alt>M" ],
+    "Del Numbered": [ NOU,"<alt><shift>M"],
+    "All Nowiki": [ NO, "<alt>N" ],
+    "Del Nowiki": [ RNO, "<alt><shift>N"],
+    "Bullets": [ MADDE, "<primary>E" ],
+    "Del Bullets": [ RMADDE, "<primary><shift>E"],
+    "Breaks": [ BOSLUK, "<primary>W"],
+    "Del Breaks":[ RBOSLUK, "<primary><shift>W" ],
     }
 }
 
@@ -257,7 +261,7 @@ def hakkinda(*_, app=None):
     aboutdialog = Adw.AboutWindow(
         application_name=PROGRAM,
         application_icon="wiki-editor",
-        issue_url="https://github.com/anilcorekci/wiki-editor-2.0",
+        issue_url="https://github.com/anilcorekci/wiki-editor-3.0",
         copyright="2010-2024 " + WHO,
         developer_name=WHO,
         transient_for=app,

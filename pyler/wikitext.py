@@ -21,6 +21,7 @@ class WikiText(gtk.ScrolledWindow):
     """
     edit = None
     seachbar = None
+    tbuffer = None
 
     def __init__(self, ileti, hamburgers):
         """
@@ -145,7 +146,7 @@ class WikiText(gtk.ScrolledWindow):
         """
         self.seachbar = SearchBar( app, *_, replace=replace)
 
-    def update_last_iter(self, buffer):
+    def update_last_iter(self, *_):
         """
         update last tag position
         on change

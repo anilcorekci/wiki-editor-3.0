@@ -1,5 +1,6 @@
 #!/usr/bin/python3.12
 # -*- coding: utf-8 -*-
+#pylint: disable=C0413, W0221, C0209, C0103
 """Wiki Editor özgür bir yazılımdır, onu Özgür Yazılım
 Vakfı'nın yayınladığı GNU Genel Kamu Lisansı'nın 2.
 sürümü veya (tercihinize bağlı) daha sonraki sürümleri
@@ -12,27 +13,31 @@ vermez. Lütfen GNU Genel Kamu Lisansı'nı daha fazla
 ayrıntı için inceleyin."""
 
 import sys
-import os
 import importlib
 import gi
 
-PATH = os.environ["PWD"] + "/pyler"
 gi.require_version('Adw', '1')
 
 from gi.repository import  Adw
 from gi.repository import GLib
 from gi.repository import Gio
 
-import notebook, araclar
-import file_operations, menu_items, wikitext
+import notebook
+import araclar
+import file_operations
+import menu_items
+import wikitext
 
 ## dependency --> sudo apt-get install gir1.2-gtksource-5
 #from gi.repository import Gtk as gtk
 
-from notebook import WikiEditor
 
 class WikiEditor3(Adw.Application):
+    """
+    Wiki Editor Application call
+    """
     initial = None
+    win = None
     def __init__(self, **kwargs):
         """
         initiate new gtk application
@@ -44,7 +49,6 @@ class WikiEditor3(Adw.Application):
         self.add_option("shortcuts", "print shortctus and exit")
 
         self.style_manager = self.get_style_manager()
-
         self.connect('activate', self.on_activate)
 
     def add_option(self, option, desc):
@@ -65,8 +69,8 @@ class WikiEditor3(Adw.Application):
         """call or reload new window
         on activate"""
 
-        if self.initial == None:
-            self.win = WikiEditor(app)
+        if self.initial is None:
+            self.win = notebook.WikiEditor(app)
 
             self.win.props.default_height = 700
             self.win.props.default_width = 800
@@ -81,7 +85,7 @@ class WikiEditor3(Adw.Application):
         importlib.reload(file_operations)
         importlib.reload(menu_items)
 
-        self.win = WikiEditor(app)
+        self.win = notebook.WikiEditor(app)
 
         self.win.props.default_height = 700
         self.win.props.default_width = 800
@@ -133,6 +137,6 @@ class WikiEditor3(Adw.Application):
         return True
 
 if __name__ == "__main__":
-    app = WikiEditor3(  application_id="com.wiki-editor",
+    application = WikiEditor3(  application_id="com.wiki-editor",
         flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
-    app.run(sys.argv)
+    application.run(sys.argv)

@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+build shortcut window by parsing
+defined lists in araclar
+"""
 
 from gi.repository import Gtk as gtk
 
@@ -42,14 +46,11 @@ class ShowShortCuts(gtk.ShortcutsWindow):
             try:
                 name, shortcut = i[0], i[-1][-1][-1]
             except KeyError: # as err:
-                """
-                print("KeyError", err)
-                print("this was expected if shotruct is given in a dict")
-                print("then take the first agrument of dict as a shortcut")
-                """
+                #print("KeyError", err)
+                #print("this was expected if shotruct is given in a dict")
+                #print("then take the first agrument of dict as a shortcut")
                 shortcut = i[-1][-1]
-                pass
-     
+
             for found in self.keys:
                 if found in shortcut:
                     self.action_filter\
@@ -58,7 +59,7 @@ class ShowShortCuts(gtk.ShortcutsWindow):
 
             name, item = i[0], i[-1][-1]
 
-            if not item or type(item) is not dict:
+            if not item or not isinstance(item, dict):
                 continue
 
             item = list(item.keys())[0]
@@ -105,12 +106,13 @@ class ShowShortCuts(gtk.ShortcutsWindow):
                 continue
 
             if keys[0] in control:
-                continue 
+                continue
 
             short_cut_ = gtk.ShortcutsShortcut()
             short_cut_.set_property("title", keys[0])
             control.append(keys[0])
-            if type(keys[-1]) is bool :
+
+            if isinstance(keys[-1], bool):
                 if keys[-2] is None:
                     continue
                 short_cut_.set_property("accelerator", keys[-2])

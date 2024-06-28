@@ -8,6 +8,7 @@ from gi.repository import Gtk as gtk
 from gi.repository import Gio
 from gi.repository import Pango as pango
 
+
 from kategori import CategoryWindow
 from araclar import mesaj
 
@@ -41,14 +42,12 @@ class ToolItem():
 
         self.app = self.wikieditor.app
         self.add_custom_styling = self.wikieditor.add_custom_styling
-        self.gl_b = self.wikieditor.gl_b
-        self.ileti = self.wikieditor.ileti
 
         self.item = self.make_item(resim, self.label, tooltip)
         self.connect_function(self.item, islem)
         self.add_shortcut()
 
-        self.gl_b["tool_active"].append(self.item)
+        self.wikieditor.gl_b["tool_active"].append(self.item)
 
     def make_item(self, resim, label, tooltip ):
         """
@@ -63,7 +62,7 @@ class ToolItem():
 
         resim.set_margin_top(3)
         resim.set_pixel_size(24)
-
+        box.set_halign(gtk.Align.CENTER)
         box.append(resim)
         box.append(label)
 
@@ -76,7 +75,7 @@ class ToolItem():
         item.set_margin_bottom(3)
         item.set_halign(gtk.Align.CENTER)
 
-        item.append(box)
+        item.append( box )
 
         return item
 
@@ -156,10 +155,10 @@ class ToolItem():
             self.wikieditor.set_text(
                 [f"{islem[0]}",
                 f"{self.wikieditor.get_konu()}",
-                f"{islem[1]}" ] 
+                f"{islem[1]}" ]
             )
         else:
-            self.ileti.set_text("No selected text found!")
+            self.wikieditor.ileti.set_text("No selected text!")
 
     def sablon(self, _, format_):
         """
@@ -273,7 +272,7 @@ class ToolItem():
                 rgba = ", ".join([*rgb, str( round(rgba.alpha,3) )])
 
                 if response == gtk.ResponseType.OK:
-                    self.wikieditor.set_text([f'<span style="color:rgba({rgba});">"',
+                    self.wikieditor.set_text([f'<span style="color:rgba({rgba});">',
                     f"\n{konu}\n","</span>"], color=f"rgba({rgba})")
                 renksec.destroy()
 
@@ -287,14 +286,16 @@ class ToolItem():
         self.wikieditor.add_custom_styling(window)
 
     def font_select(self, *_):
-
-        if self.wikieditor.get_konu():
-            dialog = gtk.FontDialog()
-            dialog.set_modal(True)
-            font = pango.FontDescription.new()
-            can = Gio.Cancellable.new()
-        else:
+        """
+        build and show font selection apply to text with <span color>
+        """
+        if not self.wikieditor.get_konu():
             return False
+
+        dialog = gtk.FontDialog()
+        dialog.set_modal(True)
+        font = pango.FontDescription.new()
+        can = Gio.Cancellable.new()
 
         def finish( _, task): #font_dialog#task
             """
@@ -319,7 +320,7 @@ class ToolItem():
                     f"font-size:{size_}px;"
                     f"font-style:{style};"
                     f'font-weight:{weight}">',
-                    f"{konu}",  "</span>"],
+                    f"\n{konu}\n",  "</span>"],
                     font=font_desc)
 
             return True

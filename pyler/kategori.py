@@ -8,6 +8,9 @@ from gi.repository import Gtk as gtk
 from araclar import CATEG, get_stock
 
 class Category(GObject.Object):
+    """
+    define gobject propery to index list
+    """
     __gtype_name__ = 'Category'
 
     def __init__(self, category_id, category_name):
@@ -18,21 +21,27 @@ class Category(GObject.Object):
 
     @GObject.Property
     def name_id(self):
+        """
+        returns id
+        """
         return self.category_id
 
     @GObject.Property
     def name(self):
+        """
+        returns name
+        """
         return self.category_name
 
-class CategoryWindow(gtk.ApplicationWindow):
+class CategoryWindow(gtk.Window):
     """
-        build, create and show categoreis
+    build, create and show categoreis
     """
     checklist = {} # gives a list of check button in relation to categories window
 
     def __init__(self, app, set_text):
 
-        gtk.ApplicationWindow.__init__(self, application=app)
+        gtk.Window.__init__(self, application=app)
         self.set_text = set_text
 
         self.set_modal(True)
@@ -56,7 +65,7 @@ class CategoryWindow(gtk.ApplicationWindow):
             self.checklist[order] = gtk.CheckButton()
             hbox.append( self.checklist[ order ] )
 
-        dume = gtk.Button( label="Tamam" )
+        dume = gtk.Button( label="Apply" )
         dume.connect( "clicked", lambda _: self.check_clicked( bilgi ) )
         dume.set_margin_top(16)
         dume.set_margin_start(32)
