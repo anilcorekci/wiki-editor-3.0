@@ -3,6 +3,9 @@
 """
 Webkit View for Wiki-Editor
 """
+import re
+import os
+
 import gi
 gi.require_version('WebKit', '6.0')
 
@@ -68,6 +71,19 @@ class Redkit:
             "php?title=Wikipedia:Template_index/General&action=edit")
         )
 
+        def preview_file(*_):
+            """load local file"""
+            file_path = self.webview.get_root().operations.get_file_path()
+            file_path = "".join(file_path.split(":")[1:3])
+            file_path =  re.sub(r"^\s+", "", file_path)
+            if os.path.isfile(file_path):
+                self.webview.load_uri(f"file://{file_path}")
+
+        preview = gtk.Button(child=get_stock("preview-file"))
+        preview.set_tooltip_text("Preview current file on webview\n"
+            "if file exist on local")
+        preview.connect("clicked", preview_file )
+
         go_back = gtk.Button(child=get_stock("go-previous-symbolic"))
         go_back.connect("clicked", lambda *_: self.webview.go_back())
 
@@ -75,11 +91,14 @@ class Redkit:
         go_forward.connect("clicked", lambda *_: self.webview.go_forward())
 
         zoom = gtk.Button(child=get_stock("zoom-in-symbolic"))
+        zoom.set_tooltip_text("Zoom in webview")
+
         zoom.connect("clicked",  lambda *_:
             self.webview.set_zoom_level(self.webview.get_zoom_level() + 0.10)
         )
 
         zoom_o = gtk.Button(child=get_stock("zoom-out-symbolic"))
+        zoom_o.set_tooltip_text("Zoom out webview")
         zoom_o.connect("clicked",  lambda *_:
             self.webview.set_zoom_level(self.webview.get_zoom_level() - 0.10)
         )
