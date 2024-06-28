@@ -27,10 +27,9 @@ class Redkit:
         ...
         """
         self.horizontal = horizontal
-        # https://webkitgtk.org/reference/webkitgtk/stable/method.self.webview.terminate_web_process.html
-        self.webview = WebKit.WebView()
-        self.webview.set_size_request(250, 400)
-        self.webview.connect("close", lambda view: view.terminate_web_process())
+    # https://webkitgtk.org/reference/webkitgtk/stable/method.self.webview.terminate_web_process.html
+
+        self.webview = self.configure_webview()
 
         paned = gtk.Paned()
         paned.set_orientation(gtk.Orientation.VERTICAL)
@@ -45,7 +44,7 @@ class Redkit:
         self.find_entry = gtk.Entry()
         self.find_entry.set_placeholder_text("https://")
         self.find_entry.set_text("https://")
-        self.find_entry.set_size_request(400,-1)
+        self.find_entry.set_size_request(300,-1)
         self.find_entry.connect("activate", lambda w:
             self.webview.load_uri(w.get_text())
         )
@@ -61,6 +60,63 @@ class Redkit:
         self.searchbar.props.margin_end = 8
         self.append_to_searchbar(paned)
 
+    def configure_webview(self):
+        """
+        setup cache model allow spelling
+        etc...
+        """
+    # see for details
+    # https://webkitgtk.org/reference/webkitgtk/stable/method.WebContext.set_cache_model.html
+
+        webview = WebKit.WebView()
+        webview.set_size_request(250, 400)
+        webview.connect("close", lambda view: view.terminate_web_process())
+    #   webview.set_editable(True)
+    #    inspect = webview.get_inspector()
+    #    inspect.connect("closed", lambda *_: inspect.close() )
+    #    inspect.connect("notify", lambda *_: print(*_))
+
+        context = webview.get_context()
+        context.set_cache_model(2)
+        context.set_spell_checking_enabled(True)
+        context.set_spell_checking_languages(["en_US","tr_TR","es_ES","pt_PT"])
+        context.set_preferred_languages(["en_US","tr_TR","es_ES","pt_PT"])
+
+    #  see all settings
+    #  https://webkitgtk.org/reference/webkitgtk/stable/method.Settings.set_feature_enabled.html
+        settings = webview.get_settings()
+    #   settings.set_enable_developer_extras(True)
+        settings.set_enable_html5_local_storage(True)
+        settings.set_enable_page_cache(True)
+        settings.set_enable_hyperlink_auditing(True)
+        settings.set_enable_webgl(True)
+        settings.set_allow_modal_dialogs(True)
+        settings.set_enable_html5_database(True)
+
+        session = webview.get_network_session()
+    #    session.set_tls_errors_policy(0)
+
+        mem_pressure = WebKit.MemoryPressureSettings.new()
+        session.set_memory_pressure_settings(mem_pressure)
+        mem_pressure.set_memory_limit(1000)
+
+    #   settings.set_enable_caret_browsing(True)
+    #   settings.set_enable_write_console_messages_to_stdout(True)
+    #   print(context.get_cache_model() )
+    #   memoryview = WebKit.MemoryPressureSettings.new()
+    #   memoryview.set_memory_limit(500) #mb
+    #   context.set_property("memory-pressure-settings", memoryview)
+
+        return webview
+
+    def preview_file(self, *_):
+        """load local file"""
+        file_path = self.webview.get_root().operations.get_file_path()
+        file_path = "".join(file_path.split(":")[1:3])
+        file_path =  re.sub(r"^\s+", "", file_path)
+        if os.path.isfile(file_path):
+            self.webview.load_uri(f"file://{file_path}")
+
     def append_to_searchbar(self, paned):
         """
         append buttons into searchbar
@@ -71,18 +127,10 @@ class Redkit:
             "php?title=Wikipedia:Template_index/General&action=edit")
         )
 
-        def preview_file(*_):
-            """load local file"""
-            file_path = self.webview.get_root().operations.get_file_path()
-            file_path = "".join(file_path.split(":")[1:3])
-            file_path =  re.sub(r"^\s+", "", file_path)
-            if os.path.isfile(file_path):
-                self.webview.load_uri(f"file://{file_path}")
-
         preview = gtk.Button(child=get_stock("preview-file"))
         preview.set_tooltip_text("Preview current file on webview\n"
             "if file exist on local")
-        preview.connect("clicked", preview_file )
+        preview.connect("clicked", self.preview_file )
 
         go_back = gtk.Button(child=get_stock("go-previous-symbolic"))
         go_back.connect("clicked", lambda *_: self.webview.go_back())
