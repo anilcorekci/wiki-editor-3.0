@@ -179,6 +179,7 @@ class SetText():
             start, end = iter_.backward_search(self.text, self.flag, None)
             self.tag.set_property("underline", False)
             self.buffer.apply_tag(self.tag, start, end)
+            self.buffer.end_user_action()
             return False
 
         self.buffer.insert_at_cursor(self.text)
