@@ -25,7 +25,9 @@ function install_files {
     chmod +x "$PWD/pyler/Wiki Editor"
     #installing dependencies
     sudo apt-get install -y  gir1.2-gtksource-5
+    sudo apt-get install -y gir1.2-vte-3.91
     sudo apt-get install -y python3-gst-1.0
+    sudo apt-get install -y libwebkitgtk-6.0-4
 
     i=-1
     for each in "${files[@]}"
