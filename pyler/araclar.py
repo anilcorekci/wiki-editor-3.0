@@ -419,7 +419,8 @@ def hata(msj, wikieditor):
             size_points=13.0,
             wrap_mode=gtk.WrapMode.NONE )
 
-    start, end = buffer.get_bounds()
+    start = buffer.get_start_iter()
+    end = buffer.get_iter_at_mark(position_mark)
 
     buffer.apply_tag(tag, start, end)
     wikieditor.current_editor.set_editable(False)
