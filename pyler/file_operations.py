@@ -317,7 +317,7 @@ class FileOperation():
 #            wiki_text = self.wikieditor.current_editor.get_parent()
 #            wiki_text.for_coding(False)
 #            wiki_text.space_drawer(False)
-            hata("\n#bug in sourceview feauture\nNot supperted file_tpye\nError Message:\n"
+            hata("\n#bug in sourceview feauture\nFile tpye not supported\nError Message:\n"
                  "GtkSourceView-CRITICAL **: 13:48:43.162:\n"
                  "Highlighting a single line took too much time,\n"
                  "syntax highlighting will be disabled\n\n\n", self.wikieditor)
