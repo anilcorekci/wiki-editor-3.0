@@ -17,7 +17,7 @@ from gi.repository import GLib
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-from araclar import get_stock, mesaj_button, mesaj
+from araclar import get_stock, mesaj_button
 
 def check_image(file_name):
     """
@@ -92,6 +92,10 @@ class OpenDirectory:
             factory=self.child["factory"]
         )
 
+        self.child["factory"].connect("setup", self.build_up_item)
+        self.child["factory"].connect("bind", self.set_up_item, self.directory )
+
+
         self.child["listview"].props.margin_bottom = 48
         self.child["listview"] .set_header_factory(header_factory)
 
@@ -124,7 +128,6 @@ class OpenDirectory:
         """
         create listview and rows
         """
-
         self.previous, files, dirs = [], [], []
         self.expanders, self.expand_widgets = {}, {}
         self.directory = directory
@@ -146,6 +149,7 @@ class OpenDirectory:
         )
         thread.daemon = True
         thread.start()
+
         return True
 
     def append_to_parent_dir(self, each, item=None, name=None):
@@ -223,10 +227,9 @@ class OpenDirectory:
         """
 
         box = gtk.Box()
-        label = gtk.Label(xalign=0, margin_start=12,
+        label = gtk.Label(xalign=0, margin_start=8,
             margin_top=6, margin_bottom=6)
 
-        box.props.margin_start = 8
         box.append(get_stock("text-x-preview"))
         box.append(label)
 
@@ -404,44 +407,38 @@ class OpenDirectory:
         file_id = item.get_item().file_id
         file_path = directory+"/"+file_id
 
+        box = item.get_child()
 
         if os.path.isdir(file_path):
             self.make_expander_row(file_id, file_path, item)
             return False
 
-        box = item.get_child()
+        if isinstance(box, gtk.Expander):
+            if file_id not in self.expand_widgets or os.path.isfile(file_path):
+        #        print("setup as box",file_id )
+                box = gtk.Box(margin_start=1)
+                label = gtk.Label(
+                    margin_start=8,
+                    margin_top=6, margin_bottom=6
+                )
+                box.append(get_stock("text-x-preview"))
+                box.append(label)
+                item.set_child(box)
+                item.set_selectable(True)
+
         label = box.get_last_child()
         image = box.get_first_child()
 
-        if isinstance(image, gtk.Box):
+        try:
+            self.set_up_image(image, file_path)
+            self.set_up_label(label, image, file_id, file_path)
+        except AttributeError:
+            pass
 
-            self.child["factory"].disconnect(self.setup)
-            self.child["factory"].disconnect(self.bind)
+        if os.path.dirname(file_path) == self.directory:
+            image.set_margin_start(8)
+            box.set_margin_start(8)
 
-            if self.child["listview"].get_sensitive():
-                GLib.idle_add(
-                    self.child["listview"].set_sensitive,
-                    False
-                )
-
-            if not self.error:
-                mesaj("An unknown error had occured...\n"
-                    "Directories out of index.",
-                    self.parent["window"]
-                )
-
-                print("**Wiki editor listview terminated..")
-
-            self.error = True
-
-            return False
-
-        if os.path.isdir(file_path):
-            self.make_expander_row(file_id, file_path, item)
-            return False
-
-        self.set_up_image(image, file_path)
-        self.set_up_label(label, image, file_id, file_path)
         return True
 
     def clean_image(self, stock):
@@ -522,7 +519,7 @@ class OpenDirectory:
         if resize > 1000:
             while resize > 1000:
                 resize = resize/2
-            stock = get_stock(pixbuf=file_, size=resize)
+            stock = get_stock(pixbuf=file_, size=width)
             stock = stock.get_paintable()
         else:
             stock = get_stock(pixbuf=file_, size=384)
@@ -544,7 +541,7 @@ class OpenDirectory:
         self.clean_image(stock)
         return False
 
-    def insert_target(self, w,  dir_name):
+    def insert_target(self, w, dir_name):
         """
         insert again into liststore
         """
@@ -552,11 +549,16 @@ class OpenDirectory:
             return False
 
         total = len(self.expanders[dir_name])
+
+        if total > 80:
+            self.choose_one(w, dir_name, total)
+            return False
+
         dirs, files = [], []
 
         def sort_function(file_):
             """
-            put directories before files
+            put directories before choose_one
             """
             if os.path.isfile(self.directory +"/"+ file_):
                 files.append(file_)
@@ -565,7 +567,6 @@ class OpenDirectory:
             dirs.append(file_)
             return file_[0]
 
-        # get index of dir_name
 
         for dir_index in range(self.child["list_store"].get_n_items()):
             each_item = self.child["list_store"].get_item(dir_index)
@@ -573,10 +574,6 @@ class OpenDirectory:
                 break
 
         sorted( self.expanders[dir_name], key=sort_function, reverse=True)
-
-        if total > 80:
-            self.choose_one(w, dir_name, total)
-            return False
 
         thread = Thread(target=self.insert_after,
             args=(dir_index, dir_name, dirs, files)
@@ -599,6 +596,9 @@ class OpenDirectory:
             for each in sorted(files) ]
         )
 
+        if len(dirs) > 10:
+            GLib.idle_add(self.child["listview"].set_sensitive, False)
+
         for name in sorted(dirs, reverse=True):
 
             time.sleep(0.125)
@@ -606,6 +606,9 @@ class OpenDirectory:
             GLib.idle_add( self.child["list_store"].insert,
                 dir_index, self.expanders[dir_name][name]
             )
+
+        if not self.child["listview"].get_sensitive():
+            GLib.idle_add(self.child["listview"].set_sensitive, True)
 
         scroll_to = dir_index + len(dirs) -2
 
@@ -615,36 +618,6 @@ class OpenDirectory:
             )
 
         GLib.idle_add(self.parent["window"].set_cursor, DEFAULT_CUR)
-
-    def choose_one(self, *args):
-        """
-        opens message dialog
-        """
-        w, dir_name, total = args
-
-        soru = mesaj_button(
-        heading=f"<b>Too many files to unpack\n{total} files within this directory..\n </b>",
-        body="<span font-weight='400'><i>"
-        "Click yes to open as a directory. "
-        "Otherwise choosen directory will not be shown?</i></span>",
-        buttons=["YES:2","NO:1"] )
-
-        soru.set_size_request(400,-1)
-
-        def response(widget, response_id):
-            """
-            choose reponse on end
-            """
-            response_id = int( widget.choose_finish(response_id) )
-            match response_id:
-                case 1:
-                    GLib.idle_add(w.set_sensitive, False)
-                    self.expanders[dir_name] = {}
-                    GLib.idle_add(w.set_expanded, False)
-                case 0:
-                    self.create_list_view(self.directory +"/" + dir_name)
-
-        soru.choose(self.parent["window"], None, response)
 
     def delete_target(self, w, dir_name):
         """
@@ -681,6 +654,38 @@ class OpenDirectory:
         GLib.idle_add(self.child["listview"].scroll_to, position -1, 0)
         return True
 
+    def choose_one(self, *args):
+        """
+        opens message dialog
+        """
+        w, dir_name, total = args
+
+        soru = mesaj_button(
+        heading=f"<b>Too many files to unpack\n{total} files within this directory..\n </b>",
+        body="<span font-weight='400'><i>"
+        "Click yes to open as a directory. "
+        "Otherwise choosen directory will not be shown?</i></span>",
+        buttons=["YES:2","NO:1"] )
+
+        soru.set_size_request(400,-1)
+
+        def response(widget, response_id):
+            """
+            choose reponse on end
+            """
+            response_id = int( widget.choose_finish(response_id) )
+            match response_id:
+                case 1:
+                    GLib.idle_add(w.set_sensitive, False)
+                    self.expanders[dir_name] = {}
+                    GLib.idle_add(w.set_expanded, False)
+                case 0:
+                    self.create_list_view(self.directory +"/" + dir_name)
+
+        soru.choose(self.parent["window"], None, response)
+
+
+
     def connect_expander(self, w):
         """
         list index key change during
@@ -689,7 +694,6 @@ class OpenDirectory:
         ...
         del or append rows on expand
         """
-        self.error = None
 
         dir_name= [k for k, v in self.expand_widgets.items() if v["expander"] == w ]
         dir_name = str(*dir_name)
