@@ -519,7 +519,7 @@ class OpenDirectory:
         if resize > 1000:
             while resize > 1000:
                 resize = resize/2
-            stock = get_stock(pixbuf=file_, size=width)
+            stock = get_stock(pixbuf=file_, size=resize)
             stock = stock.get_paintable()
         else:
             stock = get_stock(pixbuf=file_, size=384)
