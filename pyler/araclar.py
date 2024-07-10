@@ -398,21 +398,15 @@ def hata(msj, wikieditor):
     """
     buffer = wikieditor.current_buffer
     parent =  wikieditor.current_editor.get_parent()
-    time.sleep(0.2)
-
-    try:
-        buffer.disconnect_by_func(parent.update_tab_on_change)
-    except TypeError:
-        pass
-
     GLib.idle_add(hata_target, msj, wikieditor, buffer, parent)
 
 def hata_target(msj, wikieditor, buffer, parent):
     """
     returns custom error message for wikitext
     """
-
+    time.sleep(0.2)
     parent.set_sensitive(False)
+
    # pixbuf =  GdkPixbuf.Pixbuf.new_from_file_at_size("gtk-cancel.png",128,128)
     iter_ = buffer.get_iter_at_offset(0)
     position_mark = buffer.create_mark("errortag", iter_)
