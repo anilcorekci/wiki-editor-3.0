@@ -200,7 +200,9 @@ class FileOperation():
             i+=1
             self.notebook.set_current_page(i)
 
-            get_n_widget = self.notebook.get_nth_page(i)
+            center_box = self.notebook.get_tab_label(
+                self.wikieditor.current_editor.get_parent()
+            )
             # return wiki_editor
             get_n_widget = self.get_file_path(label=True)
             # return label
@@ -243,6 +245,7 @@ class FileOperation():
                         case 1:
                             pass
                         case 0:
+                            center_box.set_state_flags(gtk.StateFlags.SELECTED, True)
                             GLib.idle_add(self.notebook.remove_page, i)
                             GLib.idle_add(close)
 
@@ -250,6 +253,7 @@ class FileOperation():
           #      self.add_custom_styling(dialog)
 
             else:
+                center_box.set_state_flags(gtk.StateFlags.SELECTED, True)
                 GLib.idle_add(self.notebook.remove_page, i)
 
             break
