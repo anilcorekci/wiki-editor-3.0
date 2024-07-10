@@ -599,11 +599,9 @@ class OpenDirectory:
             for each in sorted(dirs) ]
         )
 
-        scroll_to = dir_index + len(dirs) -2
-
-        if scroll_to >= 0:
+        if dir_index >= 0:
             GLib.idle_add( self.child["listview"].scroll_to,
-                scroll_to, gtk.ListScrollFlags.FOCUS
+                dir_index + 1, gtk.ListScrollFlags.FOCUS
             )
 
         GLib.idle_add(self.parent["window"].set_cursor, DEFAULT_CUR)
