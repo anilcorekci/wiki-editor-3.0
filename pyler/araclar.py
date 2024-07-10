@@ -3,11 +3,12 @@
 """
 Tools and string variable used in WikiEditor Toplevel
 """
+import time
 import subprocess as sp_
 import gi
 
 from gi.repository import Gtk as gtk
-from gi.repository import GdkPixbuf, Gio
+from gi.repository import GdkPixbuf, Gio, GLib
 from gi.repository import GtkSource as edit
 
 from gi.repository import Adw
@@ -390,18 +391,26 @@ def mesaj(msj, pencere=None, style=None):
     else:
         pencere.add_custom_styling(alert)
 
+
 def hata(msj, wikieditor):
     """
-    returns custom error message for wikitext
+    redirect into target
     """
-
     buffer = wikieditor.current_buffer
     parent =  wikieditor.current_editor.get_parent()
+    time.sleep(0.2)
 
     try:
         buffer.disconnect_by_func(parent.update_tab_on_change)
     except TypeError:
         pass
+
+    GLib.idle_add(hata_target, msj, wikieditor, buffer, parent)
+
+def hata_target(msj, wikieditor, buffer, parent):
+    """
+    returns custom error message for wikitext
+    """
 
     parent.set_sensitive(False)
    # pixbuf =  GdkPixbuf.Pixbuf.new_from_file_at_size("gtk-cancel.png",128,128)
@@ -419,10 +428,13 @@ def hata(msj, wikieditor):
             size_points=13.0,
             wrap_mode=gtk.WrapMode.NONE )
 
-    start = buffer.get_start_iter()
-    end = buffer.get_iter_at_mark(position_mark)
 
+    start = buffer.get_start_iter()
+    time.sleep(0.01)
+    end = buffer.get_iter_at_mark(position_mark)
+    time.sleep(0.020)
     buffer.apply_tag(tag, start, end)
+
     wikieditor.current_editor.set_editable(False)
     wikieditor.current_editor.set_show_line_numbers(False)
     drawer = wikieditor.current_editor.get_space_drawer()
