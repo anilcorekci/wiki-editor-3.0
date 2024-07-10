@@ -68,7 +68,6 @@ class Redkit:
         webview.connect("close", lambda view: view.terminate_web_process())
 
         webview.try_close() #do not initiate on start
-        webview.emit("close")
 
     #   webview.set_editable(True)
     #    inspect = webview.get_inspector()
@@ -98,6 +97,8 @@ class Redkit:
         mem_pressure = WebKit.MemoryPressureSettings.new()
         session.set_memory_pressure_settings(mem_pressure)
         mem_pressure.set_memory_limit(1000)
+
+        webview.emit("close")
 
     #   settings.set_enable_caret_browsing(True)
     #   settings.set_enable_write_console_messages_to_stdout(True)
