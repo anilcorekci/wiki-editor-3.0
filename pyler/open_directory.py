@@ -459,6 +459,8 @@ class OpenDirectory:
         except TypeError:
             pass
 
+        time.sleep(0.2)
+
         self.parent["window"].current_editor.set_sensitive(False)
         parent.set_sensitive(False)
 
