@@ -163,7 +163,6 @@ class OpenDirectory:
         dir_ = dir_.split(self.directory)[1]
         dir_ =  re.sub(r'^([^/]*)/', "", dir_ )
 
-
         if name:
             return dir_
 
@@ -536,11 +535,11 @@ class OpenDirectory:
             if "New Document" in name:
                 self.parent["window"].notebook.set_current_page(i)
                 if not self.parent["window"].current_buffer.get_modified():
-                    self.clean_image(stock)
+                    GLib.idle_add(self.clean_image,stock)
                     return False
 
         self.parent["window"].operations.yeni(False)
-        self.clean_image(stock)
+        GLib.idle_add(self.clean_image,stock)
         return False
 
     def insert_target(self, w, dir_name):
@@ -568,7 +567,6 @@ class OpenDirectory:
 
             dirs.append(file_)
             return file_[0]
-
 
         for dir_index in range(self.child["list_store"].get_n_items()):
             each_item = self.child["list_store"].get_item(dir_index)
@@ -685,8 +683,6 @@ class OpenDirectory:
                     self.create_list_view(self.directory +"/" + dir_name)
 
         soru.choose(self.parent["window"], None, response)
-
-
 
     def connect_expander(self, w):
         """
