@@ -621,11 +621,7 @@ class OpenDirectory:
                     self.expand_widgets[name]["expander"].emit("activate")
 
         each = self.expand_widgets[dir_name]["dir"]
-        each = each.get_item()
-        result, position = self.child["list_store"].find(each)
-
-        if not result:
-            return False
+        position = each.get_position()
 
         position +=1
         n_item = len(self.expanders[dir_name].values())
