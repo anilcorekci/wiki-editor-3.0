@@ -594,19 +594,10 @@ class OpenDirectory:
             for each in sorted(files) ]
         )
 
-        if len(dirs) > 10:
-            GLib.idle_add(self.child["listview"].set_sensitive, False)
-
-        for name in sorted(dirs, reverse=True):
-
-            time.sleep(0.125)
-
-            GLib.idle_add( self.child["list_store"].insert,
-                dir_index, self.expanders[dir_name][name]
-            )
-
-        if not self.child["listview"].get_sensitive():
-            GLib.idle_add(self.child["listview"].set_sensitive, True)
+        GLib.idle_add( self.child["list_store"].splice,
+            dir_index, 0, [ self.expanders[dir_name][each]
+            for each in sorted(dirs) ]
+        )
 
         scroll_to = dir_index + len(dirs) -2
 
