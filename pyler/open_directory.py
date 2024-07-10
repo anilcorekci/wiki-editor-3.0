@@ -449,8 +449,6 @@ class OpenDirectory:
         ...
         """
 
-        time.sleep(0.08)
-
         buffer = self.parent["window"].current_buffer
         parent  = self.parent["window"].current_editor.get_parent()
         try:
