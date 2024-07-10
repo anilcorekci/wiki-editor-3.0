@@ -505,8 +505,8 @@ class OpenDirectory:
                     return False
 
             self.parent["window"].operations.yeni(file_)
-            self.parent["window"].operations.open(file_)
-            self.parent["window"].show_progress()
+            if self.parent["window"].operations.open(file_):
+                self.parent["window"].show_progress()
             return True
 
         stock = get_stock(pixbuf=file_, size=-1)
