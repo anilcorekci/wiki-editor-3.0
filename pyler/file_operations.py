@@ -190,15 +190,10 @@ class FileOperation():
         close operation for both tab and toplevel window
         """
         def close():
-            for each in get_n_widget:
-                GLib.idle_add(each.unrealize)
-
             if self.notebook.get_n_pages() == 1:
                 GLib.idle_add( self.notebook.set_show_tabs, False)
                 if self.gl_b["overlay"]:
                     self.gl_b["overlay"].set_margin_top(0)
-            else:
-                GLib.idle_add(self.notebook.remove_page, i)
 
         i=-1
         while i < self.notebook.get_n_pages():
@@ -248,13 +243,14 @@ class FileOperation():
                         case 1:
                             pass
                         case 0:
+                            GLib.idle_add(self.notebook.remove_page, i)
                             GLib.idle_add(close)
 
                 dialog.choose(self.wikieditor, None, resp)
           #      self.add_custom_styling(dialog)
 
             else:
-                GLib.idle_add(close)
+                GLib.idle_add(self.notebook.remove_page, i)
 
             break
 
