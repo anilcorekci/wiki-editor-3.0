@@ -104,9 +104,8 @@ class ToolItem():
         """
         if not self.shortcut:
             self.wikieditor.hamburgers[2].add_to_menu(
-                self.label,
-                lambda *_:
-                self.event.emit("pressed", True, True, True )
+                self.label, 
+                lambda *_: self.item.emit("clicked" )
             )
 
             return False
@@ -118,14 +117,14 @@ class ToolItem():
             )
 
         action = Gio.SimpleAction.new(self.label, None)
-        action.connect("activate", lambda *_: self.event.emit("pressed"))
+        action.connect("activate", lambda *_: self.item.emit("clicked"))
 
         self.app.set_accels_for_action( f"win.{self.label}", [self.shortcut] )
 
         self.wikieditor.hamburgers[2].add_to_menu(
             self.label,
             lambda *_:
-            self.event.emit("pressed", True, True, True )
+            self.item.emit("clicked" )
         )
 
     #        print(self.label,"************",self.shortcut)
