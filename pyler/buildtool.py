@@ -15,16 +15,6 @@ from araclar import mesaj
 class ToolItem():
     """
     create tooltiem via getting args:
-        label, tooltip, resim, islem
-        event for more example
-
-        def realese_show(*_ ):
-            item.props.selection_mode = gtk.SelectionMode.SINGLE
-
-        def stop_show(*_):
-            item.props.selection_mode = gtk.SelectionMode.NONE
-        self.event.connect("released", realese_show, item)
-        self.event.connect("stopped", stop_show, item)
     """
     shortcut = None
     event = None
@@ -33,7 +23,7 @@ class ToolItem():
     item = None
 
     def __init__(self, *args):
-
+        
         if len(args) > 5:
             self.wikieditor, self.label, tooltip, resim, islem, self.shortcut= args
 
@@ -54,9 +44,11 @@ class ToolItem():
         make custom box with flowbox and box
         return item
         """
+        button = gtk.Button()
         box = gtk.Box(orientation=gtk.Orientation.VERTICAL)
         box.set_spacing(6)
         box.set_size_request(32,32)
+        box.set_can_focus(False)
 
         label = gtk.Label(label=label)
 
@@ -66,18 +58,10 @@ class ToolItem():
         box.append(resim)
         box.append(label)
 
-        item = gtk.FlowBox.new()
-        item.set_tooltip_text(tooltip)
-
-        item.props.selection_mode = gtk.SelectionMode.NONE
-        item.set_margin_start(2)
-        item.set_margin_end(2)
-        item.set_margin_bottom(3)
-        item.set_halign(gtk.Align.CENTER)
-
-        item.append( box )
-
-        return item
+        button.set_child(box)
+        button.set_tooltip_text(tooltip)
+        button.add_css_class("toolitem")
+        return button
 
     def connect_function(self, item, islem):
         """
@@ -85,8 +69,8 @@ class ToolItem():
         parse type of islem and
         connect fuctions
         """
-        self.event = gtk.GestureClick.new()
-        item.add_controller(self.event)
+      #  self.event = gtk.GestureClick.new()
+       # item.add_controller(self.event)
 
         type_of = type(islem)
 
@@ -94,12 +78,12 @@ class ToolItem():
             case type_of if type_of is dict:
                 # if islem is a dict unpack & call sablon
                 shortcut, format_ = list( i for i in islem.items() )[0]
-                self.event.connect('pressed',
+                item.connect('clicked',
                     lambda *_: self.sablon(shortcut, format_))
                 self.shortcut = shortcut
 
             case type_of if type_of is list:
-                self.event.connect('pressed',
+                item.connect('clicked',
                     lambda *_: self.list_action(islem) )
 
                 if len(islem) == 3:
@@ -108,10 +92,10 @@ class ToolItem():
             case type_of if type_of is str:
                 # if it's a string call it
                 # as a fuction within ToolItem class
-                self.event.connect('pressed', getattr(self, islem))
+                item.connect('clicked', getattr(self, islem))
 
             case type_of if callable(type_of):
-                self.event.connect('pressed',islem )
+                item.connect('clicked',islem )
 
     def add_shortcut(self):
         """
