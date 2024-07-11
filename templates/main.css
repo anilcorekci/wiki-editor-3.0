@@ -170,7 +170,10 @@ checkbutton * {
     background-color: rgba(101, 15, 105, 0.658);
     color:#e92a63;
 }
-
+.toolitem:active{
+    background-color: rgba(101, 15, 105, 0.358);
+    border-radius: unset;
+}
 checkbutton frame {
     background-color: transparent;
     color:rgba(252, 188, 255, 0.418);
