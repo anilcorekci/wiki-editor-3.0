@@ -181,8 +181,8 @@ class ToolBar(gtk.Box):
         """
         change appearance type of box
         """
-        for box in self:
-            box =  box.get_last_child().get_last_child()
+        for button in self:
+            box =  button.get_child()
             image = box.get_first_child()
             label = box.get_last_child()
 
