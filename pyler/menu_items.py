@@ -70,22 +70,16 @@ class MenuItems():
             ),
 
             ( "Find", lambda *_:
-              self.wiki_editor.notebook.get_nth_page(
-                  self.wiki_editor.gl_b["tab_n_page"])\
-                    .arama( self.wiki_editor),
+              self.wikitext.arama( self.wiki_editor),
               "<primary>F"
             ),
             ( "Replace", lambda *_:
-              self.wiki_editor.notebook.get_nth_page(
-                  self.wiki_editor.gl_b["tab_n_page"])\
-                    .arama( self.wiki_editor, replace=True),
+              self.wikitext.arama( self.wiki_editor, replace=True),
               "<primary>H"
             ),
 
             ( "Print", lambda *_:
-                self.wiki_editor.notebook.get_nth_page( #get current wikitext from notebook
-                    self.gl_b["tab_n_page"]
-                ).yazdir( data=self.gl_b["yol"], window=self.wiki_editor ) ,
+                self.wikitext.yazdir( data=self.gl_b["yol"], window=self.wiki_editor ) ,
               "<primary>Y"
             ),
 
@@ -167,6 +161,16 @@ class MenuItems():
 
         for item, list_info in ICONS.items():
             ToolItem( self.wiki_editor, item, *list_info )
+
+    @property
+    def wikitext(self):
+        """
+        return current wikitext
+        """
+        notebook = self.wiki_editor.notebook
+        page = self.wiki_editor.gl_b["tab_n_page"]
+
+        return notebook.get_nth_page(page)
 
     def check_state(self, *args):
         """
