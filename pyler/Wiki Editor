@@ -145,6 +145,6 @@ class WikiEditor3(Adw.Application):
         return True
 
 if __name__ == "__main__":
-    application = WikiEditor3(  application_id="com.wiki-editor",
+    application = WikiEditor3(  application_id="Wiki-Editor",
         flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
     application.run(sys.argv)
